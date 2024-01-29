@@ -1,0 +1,39 @@
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bubble {
+  border-radius: 50%;
+  background-color: #1c1c1c;
+}
+
+.bubble-1 {
+  animation: bubbleAnimation 0.4s ease 0s infinite alternate;
+}
+
+.bubble-2 {
+  animation: bubbleAnimation 0.4s ease 0.2s infinite alternate;
+}
+
+.bubble-3 {
+  animation: bubbleAnimation 0.4s ease 0.4s infinite alternate;
+}
+
+@keyframes bubbleAnimation {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.25;
+    transform: scale(0.75);
+  }
+}
