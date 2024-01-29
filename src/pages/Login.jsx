@@ -13,14 +13,32 @@ import {
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { Email, Key } from "@mui/icons-material";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log(username + " " + password + " " + rememberMe);
+    try {
+      const response = await axios.post("http://localhost:3000/auth/login", {
+        username,
+        password,
+        rememberMe,
+      });
+      console.log(response.data);
+      if (response.data.role == "company") {
+        navigate("/cdashboard");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Signup failed:", error.response.data);
+    }
   };
   return (
     <Container component="main" maxWidth="xs">
@@ -84,7 +102,8 @@ const Login = () => {
           <FormControlLabel
             control={
               <Checkbox
-                value="remember"
+                value={rememberMe}
+                onChange={(event) => setRememberMe(event.target.checked)}
                 sx={{
                   color: "#018a82",
                   "&.Mui-checked": {

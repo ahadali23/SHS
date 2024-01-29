@@ -20,6 +20,7 @@ import {
   Business,
   Place,
 } from "@mui/icons-material";
+import axios from "axios";
 
 const CompanySignup = ({ onClose }) => {
   const navigate = useNavigate();
@@ -33,9 +34,19 @@ const CompanySignup = ({ onClose }) => {
     country: "",
   });
 
-  const handleSignup = (event) => {
+  const handleSignup = async (event) => {
     event.preventDefault();
-    navigate("/dashboard");
+    console.log(formData);
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/auth/companysignup",
+        { ...formData, role: "company" }
+      );
+      console.log(response.data);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Signup failed:", error.response.data);
+    }
   };
 
   const handleChange = (event) => {

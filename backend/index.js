@@ -9,6 +9,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 app.use("/auth", require("./routes/auth"));
+app.use("/user", require("./routes/info"));
 
 app.listen(port, () => {
   console.log(`SHS Backend Running on port ${port}`);
