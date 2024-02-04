@@ -19,13 +19,13 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid Credentials" });
     }
 
-    let expiresIn = rememberMe ? 7 * 24 * 60 * 60 : 3;
+    let expiresIn = rememberMe ? 7 * 24 * 60 * 60 : "1d";
 
     const token = jwt.sign(
       { userId: user._id, username: user.username, role: user.role },
       `process.env.JWT_KEY`,
       {
-        expiresIn,
+        expiresIn: "1d",
       }
     );
     success = true;

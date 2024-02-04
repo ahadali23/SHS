@@ -19,9 +19,12 @@ import {
   DeleteJobs,
   SuccessHiring,
 } from "../components/CompanyDashItems";
+import { useUserInfo } from "../hooks/useUserInfo";
 
 const CompanyDashboard = () => {
   const [open, setOpen] = useState(true);
+  const { loading, userInfo } = useUserInfo();
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -76,18 +79,24 @@ const CompanyDashboard = () => {
               justifyContent: "center",
             }}
           >
-            KiloByteZone{" "}
-            <IconButton
-              sx={{
-                borderRadius: "50%",
-                backgroundColor: "white",
-                color: "#018a82",
-                fontSize: "1rem",
-                ml: "5px",
-              }}
-            >
-              <Person />
-            </IconButton>
+            {loading ? (
+              "Loading..."
+            ) : (
+              <>
+                {userInfo && userInfo.info.companyName}{" "}
+                <IconButton
+                  sx={{
+                    borderRadius: "50%",
+                    backgroundColor: "white",
+                    color: "#018a82",
+                    fontSize: "1rem",
+                    ml: "5px",
+                  }}
+                >
+                  <Person />
+                </IconButton>
+              </>
+            )}
           </Typography>
         </Toolbar>
       </SHSBar>

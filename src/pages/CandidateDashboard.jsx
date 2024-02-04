@@ -26,9 +26,11 @@ import {
 } from "../components/ListItems";
 import { JobStatus } from "../components/CandidateDashItem";
 import Jobs from "../components/Jobs";
+import { useUserInfo } from "../hooks/useUserInfo";
 
 const CandidateDashboard = () => {
   const [open, setOpen] = useState(true);
+  const { loading, userInfo } = useUserInfo();
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -66,7 +68,7 @@ const CandidateDashboard = () => {
               display: "flex",
               alignItems: "center",
               position: "relative",
-              right: 300
+              right: 300,
             }}
           >
             <InputBase
@@ -80,7 +82,7 @@ const CandidateDashboard = () => {
             />
             <Search
               sx={{
-                mt:"3px",
+                mt: "3px",
                 color: "#018a82",
                 fontSize: "25px",
                 position: "absolute",
@@ -111,18 +113,25 @@ const CandidateDashboard = () => {
               justifyContent: "center",
             }}
           >
-            John Doe{" "}
-            <IconButton
-              sx={{
-                borderRadius: "50%",
-                backgroundColor: "white",
-                color: "#018a82",
-                fontSize: "1rem",
-                ml: "5px",
-              }}
-            >
-              <Person />
-            </IconButton>
+            {loading ? (
+              "Loading..."
+            ) : (
+              <>
+                {userInfo &&
+                  userInfo.info.firstName + " " + userInfo.info.lastName}{" "}
+                <IconButton
+                  sx={{
+                    borderRadius: "50%",
+                    backgroundColor: "white",
+                    color: "#018a82",
+                    fontSize: "1rem",
+                    ml: "5px",
+                  }}
+                >
+                  <Person />
+                </IconButton>
+              </>
+            )}
           </Typography>
         </Toolbar>
       </SHSBar>

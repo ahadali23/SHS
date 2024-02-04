@@ -35,6 +35,7 @@ const CandidateSignup = ({ onClose }) => {
         { ...formData, role: "candidate" }
       );
       console.log(response.data);
+      localStorage.setItem("SHS", response.data.token);
       navigate("/dashboard");
     } catch (error) {
       console.error("Signup failed:", error.response.data);

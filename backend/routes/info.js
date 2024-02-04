@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
@@ -13,10 +14,15 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_KEY);
+    const decoded = jwt.verify(token, `process.env.JWT_KEY`);
     req.user = decoded;
     next();
   } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return res
+        .status(401)
+        .json({ message: "Token expired, please log in again" });
+    }
     console.error(error);
     res.status(401).json({ message: "Invalid token" });
   }

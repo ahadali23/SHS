@@ -31,11 +31,13 @@ const Login = () => {
         rememberMe,
       });
       console.log(response.data);
-      if (response.data.role == "company") {
-        navigate("/cdashboard");
-      } else {
-        navigate("/dashboard");
-      }
+      localStorage.setItem("SHS", response.data.token);
+      navigate("/dashboard");
+      // if (response.data.role == "company") {
+      //   navigate("/cdashboard");
+      // } else {
+      //   navigate("/dashboard");
+      // }
     } catch (error) {
       console.error("Signup failed:", error.response.data);
     }
