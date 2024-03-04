@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Box,
@@ -33,15 +33,19 @@ const Login = () => {
       console.log(response.data);
       localStorage.setItem("SHS", response.data.token);
       navigate("/dashboard");
-      // if (response.data.role == "company") {
-      //   navigate("/cdashboard");
-      // } else {
-      //   navigate("/dashboard");
-      // }
     } catch (error) {
       console.error("Signup failed:", error.response.data);
     }
   };
+  useEffect(() => {
+    if (localStorage.getItem('SHS')) {
+        navigate("/dashboard");
+    }
+    else {
+        navigate("/");
+    }
+    // eslint-disable-next-line
+}, [])
   return (
     <Container component="main" maxWidth="xs">
       <Box

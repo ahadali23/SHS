@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 export const useUserInfo = () => {
@@ -10,11 +10,8 @@ export const useUserInfo = () => {
     const fetchUserInfo = async () => {
       try {
         const token = localStorage.getItem("SHS");
-
         if (!token) {
-          setError("No token found");
-          setLoading(false);
-          return;
+          throw new Error("No token found");
         }
 
         const response = await axios.get(
@@ -27,10 +24,10 @@ export const useUserInfo = () => {
         );
 
         setUserInfo({ info: response.data.userInfo, role: response.data.role });
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching user info", error);
         setError("Error fetching user info");
+      } finally {
         setLoading(false);
       }
     };
@@ -38,5 +35,10 @@ export const useUserInfo = () => {
     fetchUserInfo();
   }, []);
 
-  return { userInfo, loading, error };
+  return {
+    userInfo,
+    loading,
+    error,
+    tokenExists: Boolean(localStorage.getItem("SHS")),
+  };
 };

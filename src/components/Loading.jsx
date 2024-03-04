@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/loading.css";
 
-const Loading = ({ size = "medium", isVisible }) => {
+const Loading = ({ size = "medium" }) => {
   let defaultSize = 50;
 
   switch (size) {
@@ -23,9 +23,9 @@ const Loading = ({ size = "medium", isVisible }) => {
     height: `${defaultSize * 0.25}px`,
   };
 
-  if (isVisible === false) {
-    return null;
-  }
+  // if (isVisible === false) {
+  //   return null;
+  // }
 
   return (
     <div className="loadingContainer">

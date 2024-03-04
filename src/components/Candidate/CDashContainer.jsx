@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import {
-  Box,
   Toolbar,
   IconButton,
   List,
@@ -14,17 +14,15 @@ import {
   Person,
   Search,
 } from "@mui/icons-material";
-import SHSBar from "../components/SHSBar";
-import SHSDrawer from "../components/SHSDrawer";
-import React, { useState } from "react";
+import SHSBar from "../SHSBar";
+import SHSDrawer from "../SHSDrawer";
 import {
   candidateListItems,
   secondaryListItems,
-} from "../components/ListItems";
-import { useUserInfo } from "../hooks/useUserInfo";
-import Home from "../components/Candidate/Home";
+} from "../ListItems";
+import { useUserInfo } from "../../hooks/useUserInfo";
 
-const CandidateDashboard = () => {
+const CDashContainer = () => {
   const [open, setOpen] = useState(true);
   const { loading, userInfo } = useUserInfo();
 
@@ -33,7 +31,7 @@ const CandidateDashboard = () => {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <>
       <SHSBar position="absolute" open={open}>
         <Toolbar
           sx={{
@@ -153,24 +151,8 @@ const CandidateDashboard = () => {
           {secondaryListItems}
         </List>
       </SHSDrawer>
-      <Box
-        component="main"
-        sx={{
-          backgroundColor: (theme) =>
-            theme.palette.mode === "light"
-              ? theme.palette.grey[100]
-              : theme.palette.grey[900],
-          flexGrow: 1,
-          height: "100vh",
-          // overflow: "auto",
-        }}
-      >
-        <Toolbar />
-        {/* here */}
-        <Home />
-      </Box>
-    </Box>
+    </>
   );
 };
 
-export default CandidateDashboard;
+export default CDashContainer;

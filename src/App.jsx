@@ -1,39 +1,38 @@
-import { useState } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CompanyDashboard from "./pages/CompanyDashboard";
 import "./App.css";
 import CandidateDashboard from "./pages/CandidateDashboard";
 import { useUserInfo } from "./hooks/useUserInfo";
+import Loading from "./components/Loading";
+import CvFile from "./pages/CvFile";
 
 function App() {
   const { loading, userInfo } = useUserInfo();
-
+  if (loading) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        {!loading && (
-          <Route
-            path="/dashboard"
-            element={
-              userInfo.role === "company" ? (
-                <CompanyDashboard />
-              ) : (
-                <CandidateDashboard />
-              )
-            }
-          />
-        )}
-        {/* <Route path="/dashboard" element={<CandidateDashboard />}></Route> */}
-        {/* <Route path="/cdashboard" element={<CompanyDashboard />}></Route> */}
         <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/dashboard"
+          element={
+            userInfo.role === "company" ? (
+              <CompanyDashboard />
+            ) : (
+              <CandidateDashboard />
+            )
+          }
+        />
+        <Route path="/file" element={<CvFile />} />
       </Routes>
     </Router>
   );
