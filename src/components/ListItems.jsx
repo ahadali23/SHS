@@ -18,6 +18,12 @@ import {
 
 export const companyListItems = (
   <React.Fragment>
+    <ListItemButton id="homeButton" component={Link} to="/dashboard">
+      <ListItemIcon>
+        <Home sx={{ color: "#018a82", fontSize: "2.5rem" }} />
+      </ListItemIcon>
+      <ListItemText primary="Home" />
+    </ListItemButton>
     <ListItemButton id="PostJobButton" component={Link} to="/postjob">
       <ListItemIcon>
         <PostAdd sx={{ color: "#018a82", fontSize: "2.5rem" }} />
