@@ -25,7 +25,7 @@ router.post("/login", async (req, res) => {
       { userId: user._id, username: user.username, role: user.role },
       `process.env.JWT_KEY`,
       {
-        expiresIn: "1d",
+        expiresIn: "7d",
       }
     );
     success = true;

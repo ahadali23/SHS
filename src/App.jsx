@@ -7,6 +7,7 @@ import CandidateDashboard from "./pages/CandidateDashboard";
 import { useUserInfo } from "./hooks/useUserInfo";
 import Loading from "./components/Loading";
 import CvFile from "./pages/CvFile";
+import JobPosting from "./pages/JobPosting";
 
 function App() {
   const { loading, userInfo } = useUserInfo();
@@ -33,6 +34,7 @@ function App() {
           }
         />
         <Route path="/file" element={<CvFile />} />
+        <Route path="/postjob" element={<JobPosting />} />
       </Routes>
     </Router>
   );

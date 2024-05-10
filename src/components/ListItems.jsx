@@ -18,7 +18,7 @@ import {
 
 export const companyListItems = (
   <React.Fragment>
-    <ListItemButton>
+    <ListItemButton id="PostJobButton" component={Link} to="/postjob">
       <ListItemIcon>
         <PostAdd sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>

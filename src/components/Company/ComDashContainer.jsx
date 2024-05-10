@@ -1,28 +1,32 @@
+import React, { useState } from "react";
 import {
-  Box,
   Toolbar,
   IconButton,
   List,
   Divider,
   Typography,
 } from "@mui/material";
-import { ChevronLeft, Menu, Notifications, Person } from "@mui/icons-material";
-import SHSBar from "../components/SHSBar";
-import SHSDrawer from "../components/SHSDrawer";
-import React, { useState } from "react";
-import { companyListItems, secondaryListItems } from "../components/ListItems";
-import { useUserInfo } from "../hooks/useUserInfo";
-import Home from "../components/Company/Home";
+import {
+  ChevronLeft,
+  Menu,
+  Notifications,
+  Person,
+} from "@mui/icons-material";
+import SHSBar from "../SHSBar";
+import SHSDrawer from "../SHSDrawer";
+import { companyListItems, secondaryListItems } from "../ListItems";
+import { useUserInfo } from "../../hooks/useUserInfo";
 
-const CompanyDashboard = () => {
+const ComDashContainer = () => {
   const [open, setOpen] = useState(true);
   const { loading, userInfo } = useUserInfo();
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
   return (
-    <Box sx={{ display: "flex" }}>
+    <>
       <SHSBar position="absolute" open={open}>
         <Toolbar
           sx={{
@@ -113,23 +117,8 @@ const CompanyDashboard = () => {
           {secondaryListItems}
         </List>
       </SHSDrawer>
-      <Box
-        component="main"
-        sx={{
-          backgroundColor: (theme) =>
-            theme.palette.mode === "light"
-              ? theme.palette.grey[100]
-              : theme.palette.grey[900],
-          flexGrow: 1,
-          height: "100vh",
-          // overflow: "auto",
-        }}
-      >
-        <Toolbar />
-        <Home />
-      </Box>
-    </Box>
+    </>
   );
 };
 
-export default CompanyDashboard;
+export default ComDashContainer;

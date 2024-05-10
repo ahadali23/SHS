@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Container, Box, Button, Divider, Typography } from "@mui/material";
-import CompanySignup from "../components/CompanySignup";
+import CompanySignup from "../components/Company/CompanySignup";
 import CandidateSignup from "../components/Candidate/CandidateSignup";
 
 const Signup = () => {
