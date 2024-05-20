@@ -93,28 +93,9 @@ const JobPost = () => {
     "JSON Web Tokens (JWT)",
     "WebSockets",
     "Firebase",
-    "Redux",
-    "Express.js",
-    "Django",
-    "Flask",
-    "Spring Framework",
-    "Hibernate",
-    "ASP.NET",
-    ".NET Core",
-    "PHP Laravel",
-    "Symfony",
-    "ASP.NET MVC",
-    "Ruby on Rails",
-    "Go (Golang)",
-    "Rust",
-    "Dart",
-    "Flutter",
-    "Android Development",
-    "iOS Development",
-    "Xamarin",
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitting:", {
       jobTitle,
@@ -127,6 +108,25 @@ const JobPost = () => {
       experience,
       education,
     });
+
+    try {
+      const response = await axios.post("http://localhost:3000/job/post", {
+        jobTitle,
+        jobDescription,
+        city,
+        country,
+        jobType,
+        salary,
+        skills,
+        experience,
+        education,
+      });
+      console.log(response.data);
+      localStorage.setItem("SHS", response.data.token);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Signup failed:", error.response.data);
+    }
   };
 
   return (

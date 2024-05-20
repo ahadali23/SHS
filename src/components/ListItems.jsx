@@ -16,6 +16,13 @@ import {
   Feedback,
 } from "@mui/icons-material";
 
+const logout = () => {
+  // Clear the authentication token from local storage
+  localStorage.removeItem("SHS");
+  // Redirect the user to the login page
+  window.location.href = "/";
+};
+
 export const companyListItems = (
   <React.Fragment>
     <ListItemButton id="homeButton" component={Link} to="/dashboard">
@@ -59,7 +66,7 @@ export const candidateListItems = (
       </ListItemIcon>
       <ListItemText primary="Home" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton id="browseJobsButton" component={Link} to="/jobs">
       <ListItemIcon>
         <UploadFile sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>
@@ -83,7 +90,7 @@ export const candidateListItems = (
       </ListItemIcon>
       <ListItemText primary="Technical Test" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton id="interviewButton" component={Link} to="/interview">
       <ListItemIcon>
         <HeadsetMic sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>
@@ -106,7 +113,7 @@ export const secondaryListItems = (
       </ListItemIcon>
       <ListItemText primary="Settings" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton onClick={logout}>
       <ListItemIcon>
         <Logout sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>

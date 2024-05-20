@@ -8,6 +8,8 @@ import { useUserInfo } from "./hooks/useUserInfo";
 import Loading from "./components/Loading";
 import CvFile from "./pages/CvFile";
 import JobPosting from "./pages/JobPosting";
+import BrowseJobs from "./pages/BrowseJobs";
+import Interview from "./pages/Interview";
 
 function App() {
   const { loading, userInfo } = useUserInfo();
@@ -35,6 +37,8 @@ function App() {
         />
         <Route path="/file" element={<CvFile />} />
         <Route path="/postjob" element={<JobPosting />} />
+        <Route path="/jobs" element={<BrowseJobs />} />
+        <Route path="/interview" element={<Interview />} />
       </Routes>
     </Router>
   );

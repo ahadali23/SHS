@@ -15,6 +15,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { Email, Key } from "@mui/icons-material";
 import axios from "axios";
 
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      localStorage.removeItem("SHS");
+      window.location.href = "/"; // Redirect to login page
+    }
+    return Promise.reject(error);
+  }
+);
+
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -38,14 +49,13 @@ const Login = () => {
     }
   };
   useEffect(() => {
-    if (localStorage.getItem('SHS')) {
-        navigate("/dashboard");
-    }
-    else {
-        navigate("/");
+    if (localStorage.getItem("SHS")) {
+      navigate("/dashboard");
+    } else {
+      navigate("/");
     }
     // eslint-disable-next-line
-}, [])
+  }, []);
   return (
     <Container component="main" maxWidth="xs">
       <Box
