@@ -8,12 +8,13 @@ import {
   FormControlLabel,
   Grid,
   Checkbox,
-  Button,
   InputAdornment,
+  Alert,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { Email, Key } from "@mui/icons-material";
 import axios from "axios";
+import { LoadingButton } from "@mui/lab";
 
 axios.interceptors.response.use(
   (response) => response,
@@ -31,9 +32,13 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
+    setError(""); // Reset error message
     console.log(username + " " + password + " " + rememberMe);
     try {
       const response = await axios.post("http://localhost:3000/auth/login", {
@@ -43,11 +48,22 @@ const Login = () => {
       });
       console.log(response.data);
       localStorage.setItem("SHS", response.data.token);
+      setLoading(false);
       navigate("/dashboard");
     } catch (error) {
-      console.error("Signup failed:", error.response.data);
+      setLoading(false);
+      if (error.response && error.response.data) {
+        setError("Invalid username or password");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+      console.error(
+        "Login failed:",
+        error.response ? error.response.data : error
+      );
     }
   };
+
   useEffect(() => {
     if (localStorage.getItem("SHS")) {
       navigate("/dashboard");
@@ -56,6 +72,7 @@ const Login = () => {
     }
     // eslint-disable-next-line
   }, []);
+
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -71,15 +88,18 @@ const Login = () => {
           Sign in
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          {error && (
+            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <TextField
             margin="normal"
             required
             fullWidth
             id="username"
             value={username}
-            onChange={(event) => {
-              setUsername(event.target.value);
-            }}
+            onChange={(event) => setUsername(event.target.value)}
             label="Username"
             name="username"
             autoComplete="username"
@@ -102,9 +122,7 @@ const Login = () => {
             type="password"
             id="password"
             value={password}
-            onChange={(event) => {
-              setPassword(event.target.value);
-            }}
+            onChange={(event) => setPassword(event.target.value)}
             autoComplete="current-password"
             InputProps={{
               startAdornment: (
@@ -130,7 +148,7 @@ const Login = () => {
             }
             label="Remember me"
           />
-          <Button
+          <LoadingButton
             type="submit"
             fullWidth
             variant="contained"
@@ -146,9 +164,10 @@ const Login = () => {
               fontSize: 18,
               fontWeight: "bold",
             }}
+            loading={loading}
           >
             Sign In
-          </Button>
+          </LoadingButton>
           <Grid container>
             <Grid item xs>
               <Link
