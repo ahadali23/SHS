@@ -19,11 +19,10 @@ const JobPostingSchema = new Schema({
   skills: [String],
   experience: String,
   education: String,
-  // company: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: "Company",
-  //   required: true,
-  // },
+  companyName: {
+    type: String,
+    required: true,
+  },
 });
 
 const JobPost = mongoose.model("JobsPosted", JobPostingSchema);

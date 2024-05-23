@@ -15,6 +15,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import axios from "axios";
+import { useUserInfo } from "../../hooks/useUserInfo";
 
 const JobPost = () => {
   const [jobTitle, setJobTitle] = useState("");
@@ -26,6 +27,7 @@ const JobPost = () => {
   const [skills, setSkills] = useState([]);
   const [experience, setExperience] = useState("");
   const [education, setEducation] = useState("");
+  const { userInfo } = useUserInfo();
 
   const skillOptions = [
     "JavaScript",
@@ -107,6 +109,7 @@ const JobPost = () => {
       skills,
       experience,
       education,
+      companyName: userInfo.info.companyName,
     });
 
     try {
@@ -120,6 +123,7 @@ const JobPost = () => {
         skills,
         experience,
         education,
+        companyName: userInfo.info.companyName,
       });
       console.log(response.data);
       localStorage.setItem("SHS", response.data.token);
@@ -206,7 +210,7 @@ const JobPost = () => {
                     <MenuItem value="full-time">Full Time</MenuItem>
                     <MenuItem value="part-time">Part Time</MenuItem>
                     <MenuItem value="contract">Contract</MenuItem>
-                    <MenuItem value="intership">Intership</MenuItem>
+                    <MenuItem value="internship">Internship</MenuItem>
                   </Select>
                 </FormControl>
                 <TextField

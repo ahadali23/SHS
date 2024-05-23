@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 const JobPosting = require("../models/JobPosting");
 
-router.get('/get', async (req, res) => {
+router.get("/get", async (req, res) => {
   try {
     const jobPostings = await JobPosting.find();
     res.json(jobPostings);
   } catch (err) {
-    console.error('Error fetching job postings:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error fetching job postings:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 // POST route to create a new job posting
@@ -24,6 +24,7 @@ router.post("/post", async (req, res) => {
       skills,
       experience,
       education,
+      companyName,
     } = req.body;
 
     const newJobPosting = new JobPosting({
@@ -38,6 +39,7 @@ router.post("/post", async (req, res) => {
       skills,
       experience,
       education,
+      companyName,
     });
 
     const savedJobPosting = await newJobPosting.save();

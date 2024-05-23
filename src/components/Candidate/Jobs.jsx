@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, IconButton, Paper } from "@mui/material";
 import { Share, BookmarkBorder } from "@mui/icons-material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // const jobs = [
 //   {
@@ -33,6 +34,7 @@ import axios from "axios";
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -48,6 +50,11 @@ const Jobs = () => {
 
     fetchJobs(); // Call the function
   }, []);
+
+  const handleDetailsClick = (job) => {
+    const jobUrl = `/jobs/${job.companyName}/${job.jobTitle}`;
+    navigate(jobUrl, { state: { job } });
+  };
 
   return (
     <div>
@@ -83,7 +90,7 @@ const Jobs = () => {
               </Box>
             </Typography>
             <Typography variant="subtitle1" sx={{ mb: 1 }}>
-              {job.company}
+              {job.companyName}
             </Typography>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
               {job.location.city + ", " + job.location.country}
@@ -106,6 +113,7 @@ const Jobs = () => {
                   },
                   textTransform: "none",
                 }}
+                onClick={() => handleDetailsClick(job)}
               >
                 Details
               </Button>
