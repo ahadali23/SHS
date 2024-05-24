@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Toolbar } from "@mui/material";
 import ComDashContainer from "../components/Company/ComDashContainer";
-import JobPost from "../components/Company/PostJobs";
+import PostJobs from "../components/Company/PostJobs";
 
 const JobPosting = () => {
   return (
@@ -20,7 +20,7 @@ const JobPosting = () => {
       >
         <Toolbar />
         {/* here */}
-        <JobPost />
+        <PostJobs />
       </Box>
     </Box>
   );

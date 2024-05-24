@@ -23,6 +23,12 @@ const JobPostingSchema = new Schema({
     type: String,
     required: true,
   },
+  position: String,
+  postDate: {
+    type: Date,
+    default: Date.now,
+  },
+  deadline: Date,
 });
 
 const JobPost = mongoose.model("JobsPosted", JobPostingSchema);

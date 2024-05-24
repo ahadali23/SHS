@@ -11,6 +11,17 @@ router.get("/get", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+router.get("/get/:companyName", async (req, res) => {
+  const { companyName } = req.params;
+  try {
+    const jobPostings = await JobPosting.find({ companyName });
+    res.json(jobPostings);
+  } catch (err) {
+    console.error("Error fetching job postings:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 // POST route to create a new job posting
 router.post("/post", async (req, res) => {
   try {
