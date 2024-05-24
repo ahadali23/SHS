@@ -89,7 +89,7 @@ const Login = () => {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           {error && (
-            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+            <Alert severity="error" sx={{ m: 1 }}>
               {error}
             </Alert>
           )}
@@ -165,6 +165,7 @@ const Login = () => {
               fontWeight: "bold",
             }}
             loading={loading}
+            disabled={loading} // Disable button when loading
           >
             Sign In
           </LoadingButton>
