@@ -36,6 +36,8 @@ router.post("/post", async (req, res) => {
       experience,
       education,
       companyName,
+      position,
+      deadline,
     } = req.body;
 
     const newJobPosting = new JobPosting({
@@ -51,6 +53,8 @@ router.post("/post", async (req, res) => {
       experience,
       education,
       companyName,
+      position,
+      deadline,
     });
 
     const savedJobPosting = await newJobPosting.save();

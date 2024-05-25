@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useUserInfo } from "../../hooks/useUserInfo";
+import { useNavigate } from "react-router-dom";
 
 const JobPost = () => {
   const [jobTitle, setJobTitle] = useState("");
@@ -27,7 +28,10 @@ const JobPost = () => {
   const [skills, setSkills] = useState([]);
   const [experience, setExperience] = useState("");
   const [education, setEducation] = useState("");
+  const [position, setPosition] = useState("");
+  const [deadline, setDeadline] = useState("");
   const { userInfo } = useUserInfo();
+  const navigate = useNavigate();
 
   const skillOptions = [
     "JavaScript",
@@ -99,19 +103,6 @@ const JobPost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting:", {
-      jobTitle,
-      jobDescription,
-      city,
-      country,
-      jobType,
-      salary,
-      skills,
-      experience,
-      education,
-      companyName: userInfo.info.companyName,
-    });
-
     try {
       const response = await axios.post("http://localhost:3000/job/post", {
         jobTitle,
@@ -124,12 +115,14 @@ const JobPost = () => {
         experience,
         education,
         companyName: userInfo.info.companyName,
+        position,
+        deadline,
       });
       console.log(response.data);
       localStorage.setItem("SHS", response.data.token);
       navigate("/dashboard");
     } catch (error) {
-      console.error("Signup failed:", error.response.data);
+      console.error("Job post failed:", error.response.data);
     }
   };
 
@@ -177,6 +170,14 @@ const JobPost = () => {
                   rows={4}
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
+                />
+                <TextField
+                  fullWidth
+                  label="Position"
+                  variant="outlined"
+                  margin="normal"
+                  value={position}
+                  onChange={(e) => setPosition(e.target.value)}
                 />
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
@@ -264,6 +265,16 @@ const JobPost = () => {
                   margin="normal"
                   value={education}
                   onChange={(e) => setEducation(e.target.value)}
+                />
+                <TextField
+                  fullWidth
+                  label="Deadline"
+                  variant="outlined"
+                  margin="normal"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
                 />
                 <Button
                   type="submit"

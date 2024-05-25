@@ -23,6 +23,7 @@ import JobForm from "./JobForm";
 const JobPost = () => {
   const [jobPosts, setJobPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [createNew, setCreateNew] = useState(false);
 
   const { userInfo } = useUserInfo();
 
@@ -68,64 +69,73 @@ const JobPost = () => {
               width: "100%",
             }}
           >
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
-            >
-              <Typography variant="h5">Job Posts</Typography>
-              <Button variant="contained" color="primary">
-                Create New
-              </Button>
-            </Box>
             {loading ? (
               <Box sx={{ display: "flex", justifyContent: "center", my: 5 }}>
                 <CircularProgress />
               </Box>
-            ) : jobPosts.length === 0 ? (
+            ) : createNew || jobPosts.length === 0 ? (
               <JobForm />
             ) : (
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Job Title</TableCell>
-                      <TableCell align="right">Posting Date</TableCell>
-                      <TableCell align="right">Deadline</TableCell>
-                      <TableCell align="right">Submissions</TableCell>
-                      <TableCell align="right">Actions</TableCell>{" "}
-                      {/* Updated TableCell header */}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {jobPosts.map((row) => (
-                      <TableRow
-                        key={row._id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell component="th" scope="row">
-                          {row.jobTitle}
-                        </TableCell>
-                        <TableCell align="right">{row.postingDate}</TableCell>
-                        <TableCell align="right">{row.deadline}</TableCell>
-                        <TableCell align="right">{row.submissions}</TableCell>
-                        <TableCell align="right">
-                          <IconButton>
-                            <Edit />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => {
-                              console.log(jobPosts);
-                            }}
-                          >
-                            <Delete />
-                          </IconButton>
-                        </TableCell>
+              <>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 2,
+                  }}
+                >
+                  <Typography variant="h5">Job Posts</Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setCreateNew(true)}
+                  >
+                    Create New
+                  </Button>
+                </Box>
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Job Title</TableCell>
+                        <TableCell align="right">Posting Date</TableCell>
+                        <TableCell align="right">Deadline</TableCell>
+                        <TableCell align="right">Submissions</TableCell>
+                        <TableCell align="right">Actions</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                      {jobPosts.map((row) => (
+                        <TableRow
+                          key={row._id}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {row.jobTitle}
+                          </TableCell>
+                          <TableCell align="right">
+                            {new Date(row.postDate).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell align="right">
+                            {new Date(row.deadline).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell align="right">{row.submissions}</TableCell>
+                          <TableCell align="right">
+                            <IconButton aria-label="edit">
+                              <Edit />
+                            </IconButton>
+                            <IconButton aria-label="delete">
+                              <Delete />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </>
             )}
           </Paper>
         </Box>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Box,
@@ -9,6 +9,10 @@ import {
   Button,
   Divider,
   Chip,
+  Modal,
+  TextField,
+  Backdrop,
+  Fade,
 } from "@mui/material";
 import {
   Work,
@@ -19,12 +23,27 @@ import {
   Business,
   Schedule,
   Group,
-  Settings,
 } from "@mui/icons-material";
+import { MuiFileInput } from 'mui-file-input'
 
 const JobDetails = () => {
   const location = useLocation();
   const { job } = location.state || {};
+
+  const [open, setOpen] = useState(false);
+  const [file, setFile] = useState(null);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleChange = (newFile) => {
+    setFile(newFile);
+  };
 
   if (!job) {
     return <Typography>Loading...</Typography>;
@@ -257,6 +276,7 @@ const JobDetails = () => {
                 fontSize: 16,
                 fontWeight: "bold",
               }}
+              onClick={handleOpen}
             >
               Apply Now
             </Button>
@@ -281,22 +301,72 @@ const JobDetails = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 400,
+              bgcolor: "background.paper",
+              borderRadius: 2,
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <Typography variant="h6" component="h2">
+              Apply For This Job
+            </Typography>
+            <Box component="form" sx={{ mt: 2 }}>
+              <TextField
+                margin="dense"
+                label="Name"
+                type="text"
+                fullWidth
+                variant="outlined"
+              />
+              <TextField
+                margin="dense"
+                label="Email Address"
+                type="email"
+                fullWidth
+                variant="outlined"
+              />
+              <TextField
+                margin="dense"
+                label="Message"
+                type="text"
+                fullWidth
+                multiline
+                rows={4}
+                variant="outlined"
+              />
+              <MuiFileInput value={file} onChange={handleChange} />
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                <Button onClick={handleClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleClose} color="primary" sx={{ ml: 1 }}>
+                  Send Application
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        </Fade>
+      </Modal>
     </Container>
   );
 };
 
 export default JobDetails;
-
-{
-  /* <Box sx={{ p: 3 }}>
-      <Typography variant="h4" component="h1">
-        {job.jobTitle}
-      </Typography>
-      <Typography variant="h6" component="h2">
-        {job.companyName}
-      </Typography>
-      <Typography variant="body1">
-        <strong>Location:</strong> {job.location.city}, {job.location.country}
-      </Typography>
-    </Box> */
-}
