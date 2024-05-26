@@ -37,7 +37,7 @@ export const companyListItems = (
       </ListItemIcon>
       <ListItemText primary="Post Job" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton id="RecordButton" component={Link} to="/candidate-record">
       <ListItemIcon>
         <FolderOpen sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Box,
@@ -9,10 +9,6 @@ import {
   Button,
   Divider,
   Chip,
-  Modal,
-  TextField,
-  Backdrop,
-  Fade,
 } from "@mui/material";
 import {
   Work,
@@ -24,14 +20,14 @@ import {
   Schedule,
   Group,
 } from "@mui/icons-material";
-import { MuiFileInput } from 'mui-file-input'
+import ApplyModal from "../ApplyModal";
 
 const JobDetails = () => {
+  const [open, setOpen] = useState(false);
+  const [timeAgo, setTimeAgo] = useState("");
+
   const location = useLocation();
   const { job } = location.state || {};
-
-  const [open, setOpen] = useState(false);
-  const [file, setFile] = useState(null);
 
   const handleOpen = () => {
     setOpen(true);
@@ -41,13 +37,28 @@ const JobDetails = () => {
     setOpen(false);
   };
 
-  const handleChange = (newFile) => {
-    setFile(newFile);
-  };
-
   if (!job) {
     return <Typography>Loading...</Typography>;
   }
+  useEffect(() => {
+    if (job && job.postDate) {
+      const postDate = new Date(job.postDate);
+      const currentTime = new Date();
+      const timeDifference = Math.floor((currentTime - postDate) / (1000 * 60)); // in minutes
+
+      if (timeDifference < 1) {
+        setTimeAgo("Now");
+      } else if (timeDifference < 60) {
+        setTimeAgo(`${timeDifference} min ago`);
+      } else if (timeDifference < 1440) {
+        const hours = Math.floor(timeDifference / 60);
+        setTimeAgo(`${hours} hour${hours > 1 ? "s" : ""} ago`);
+      } else {
+        const days = Math.floor(timeDifference / 1440);
+        setTimeAgo(`${days} day${days > 1 ? "s" : ""} ago`);
+      }
+    }
+  }, [job]);
 
   return (
     <Container>
@@ -70,7 +81,7 @@ const JobDetails = () => {
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Group sx={{ color: "#018a82", mr: 1 }} />
               <Typography variant="body1" sx={{ mr: 2 }}>
-                8 Vacancy
+                2 Vacancy
               </Typography>
             </Box>
             <Divider sx={{ mb: 2 }} />
@@ -78,9 +89,9 @@ const JobDetails = () => {
               {[
                 {
                   label: "Employee type",
-                  value: "Full Time",
+                  value: job.jobType,
                 },
-                { label: "Position", value: "Senior" },
+                { label: "Position", value: job.position },
               ].map((item, index) => (
                 <Box
                   key={index}
@@ -106,72 +117,7 @@ const JobDetails = () => {
               Job Description
             </Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              As a Product Designer, you will work within a Product Delivery
-              Team fused with UX, engineering, product and data talent. You will
-              help the team design beautiful interfaces that solve business
-              challenges for our clients. We work with a number of Tier 1 banks
-              on building web-based applications for AML, KYC and Sanctions List
-              management workflows. This role is ideal if you are looking to
-              segue your career into the FinTech or Big Data arenas.
-            </Typography>
-            <Typography variant="h6" sx={{ mt: 1 }}>
-              Responsibilities
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 1 }}>
-              As a Product Designer, you will work within a Product Delivery
-              Team fused with UX, engineering, product and data talent. You
-              will:
-              <ul>
-                <li>Have sound knowledge of commercial activities.</li>
-                <li>
-                  Build next-generation web applications with a focus on the
-                  client side.
-                </li>
-                <li>
-                  Work on multiple projects at once, and consistently meet draft
-                  deadlines.
-                </li>
-                <li>
-                  Have already graduated or are currently in any year of study.
-                </li>
-                <li>
-                  Revise the work of previous designers to create a unified
-                  aesthetic for our brand materials.
-                </li>
-              </ul>
-            </Typography>
-            <Typography variant="h6" sx={{ mt: 1 }}>
-              Qualification
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 1 }}>
-              <ul>
-                <li>
-                  B.C.A / M.C.A under National University course complete.
-                </li>
-                <li>3 or more years of professional design experience.</li>
-                <li>
-                  Have already graduated or are currently in any year of study.
-                </li>
-                <li>
-                  Advanced degree or equivalent experience in graphic and web
-                  design.
-                </li>
-              </ul>
-            </Typography>
-            <Typography variant="h6" sx={{ mt: 1 }}>
-              Skill & Experience
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 1 }}>
-              <ul>
-                <li>Understanding of key Design Principal.</li>
-                <li>Proficiency With HTML, CSS, Bootstrap.</li>
-                <li>WordPress: 1 year (Required).</li>
-                <li>
-                  Experience designing and developing responsive design
-                  websites.
-                </li>
-                <li>Web designing: 1 year (Preferred).</li>
-              </ul>
+              {job.jobDescription}
             </Typography>
             <Box sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 1 }}>
               {job.skills.map((skill, index) => (
@@ -197,8 +143,7 @@ const JobDetails = () => {
               flexDirection: "column",
               boxShadow: 3,
               borderRadius: 2,
-              height: "auto", // Adjusted height to fit all content
-              // backgroundColor: "#f5f5f5",
+              height: "auto",
             }}
           >
             <Typography variant="h6" sx={{ mb: 2 }}>
@@ -209,29 +154,33 @@ const JobDetails = () => {
                 {
                   icon: <Work />,
                   label: "Job Title",
-                  value: "Product Designer",
+                  value: job.jobTitle,
                 },
                 {
                   icon: <AccessTime />,
                   label: "Experience",
-                  value: "0-3 Years",
+                  value: job.experience,
                 },
-                { icon: <LocationOn />, label: "Location", value: "New York" },
+                {
+                  icon: <LocationOn />,
+                  label: "Location",
+                  value: job.location.city + ", " + job.location.country,
+                },
                 {
                   icon: <AttachMoney />,
                   label: "Offered Salary",
-                  value: "$35k - $45k",
+                  value: job.salary,
                 },
                 {
                   icon: <School />,
                   label: "Qualification",
-                  value: "Bachelor Degree",
+                  value: job.education,
                 },
                 { icon: <Business />, label: "Industry", value: "Private" },
                 {
                   icon: <Schedule />,
                   label: "Date Posted",
-                  value: "Posted 2 hrs ago",
+                  value: timeAgo,
                 },
               ].map((item, index) => (
                 <Box
@@ -288,9 +237,6 @@ const JobDetails = () => {
                 mt: 2,
                 color: "#F6CC53",
                 backgroundColor: "#FEF7E5",
-                // "&:hover": {
-                //   backgroundColor: "#52c9c1",
-                // },
                 textTransform: "none",
                 fontSize: 16,
                 fontWeight: "bold",
@@ -302,69 +248,7 @@ const JobDetails = () => {
         </Grid>
       </Grid>
 
-      <Modal
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={open}>
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: 400,
-              bgcolor: "background.paper",
-              borderRadius: 2,
-              boxShadow: 24,
-              p: 4,
-            }}
-          >
-            <Typography variant="h6" component="h2">
-              Apply For This Job
-            </Typography>
-            <Box component="form" sx={{ mt: 2 }}>
-              <TextField
-                margin="dense"
-                label="Name"
-                type="text"
-                fullWidth
-                variant="outlined"
-              />
-              <TextField
-                margin="dense"
-                label="Email Address"
-                type="email"
-                fullWidth
-                variant="outlined"
-              />
-              <TextField
-                margin="dense"
-                label="Message"
-                type="text"
-                fullWidth
-                multiline
-                rows={4}
-                variant="outlined"
-              />
-              <MuiFileInput value={file} onChange={handleChange} />
-              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-                <Button onClick={handleClose} color="primary">
-                  Cancel
-                </Button>
-                <Button onClick={handleClose} color="primary" sx={{ ml: 1 }}>
-                  Send Application
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-        </Fade>
-      </Modal>
+      <ApplyModal open={open} handleClose={handleClose} jobId={job._id} />
     </Container>
   );
 };

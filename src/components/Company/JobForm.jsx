@@ -167,7 +167,6 @@ const JobPost = () => {
                   variant="outlined"
                   margin="normal"
                   multiline
-                  rows={4}
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                 />

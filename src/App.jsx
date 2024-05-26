@@ -11,6 +11,7 @@ import JobPosting from "./pages/JobPosting";
 import BrowseJobs from "./pages/BrowseJobs";
 import Interview from "./pages/Interview";
 import JobInfo from "./pages/JobInfo";
+import CandidateRecords from "./pages/CandidateRecords";
 
 function App() {
   const { loading, userInfo } = useUserInfo();
@@ -39,6 +40,7 @@ function App() {
         <Route path="/file" element={<CvFile />} />
         <Route path="/postjob" element={<JobPosting />} />
         <Route path="/jobs" element={<BrowseJobs />} />
+        <Route path="/candidate-record" element={<CandidateRecords />} />
         <Route path="/jobs/:companyName/:jobTitle" element={<JobInfo />} />
         <Route path="/interview" element={<Interview />} />
       </Routes>

@@ -26,6 +26,7 @@ app.use("/auth", require("./routes/auth"));
 app.use("/user", require("./routes/info"));
 app.use("/file", require("./routes/file"));
 app.use("/job", require("./routes/job"));
+app.use("/apply", require("./routes/apply"));
 
 app.listen(port, () => {
   console.log(`SHS Backend Running on port ${port}`);
