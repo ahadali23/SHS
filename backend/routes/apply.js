@@ -38,6 +38,16 @@ function checkFileType(file, cb) {
   }
 }
 
+router.get("/get", async (req, res) => {
+  try {
+    const Applicants = await ApplyJob.find();
+    res.json(Applicants);
+  } catch (err) {
+    console.error("Error fetching  Applicants:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Endpoint to submit a job application
 router.post("/application", (req, res) => {
   upload(req, res, async (err) => {
@@ -76,7 +86,7 @@ router.post("/application", (req, res) => {
         console.error(`stderr: ${data}`);
       });
 
-      pythonProcess.on("close", (code) => {
+      pythonProcess.on("close", async (code) => {
         if (code !== 0) {
           console.error(`Python process exited with code ${code}`);
           return res.status(500).json({ error: "Internal server error" });
@@ -84,7 +94,21 @@ router.post("/application", (req, res) => {
 
         try {
           const analysisResult = JSON.parse(result);
-          res.json(analysisResult); // Send analysis result back to frontend
+
+          // Save application data to MongoDB
+          const jobApplication = new ApplyJob({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            jobID: jobID,
+            userID: userID,
+            file: req.file.path,
+            cvScore: analysisResult.score,
+          });
+
+          await jobApplication.save();
+
+          res.json(analysisResult);
         } catch (parseError) {
           console.error("Error parsing Python script output:", parseError);
           res.status(500).json({ error: "Internal server error" });
