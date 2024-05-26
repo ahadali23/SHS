@@ -12,6 +12,8 @@ import BrowseJobs from "./pages/BrowseJobs";
 import Interview from "./pages/Interview";
 import JobInfo from "./pages/JobInfo";
 import CandidateRecords from "./pages/CandidateRecords";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   const { loading, userInfo } = useUserInfo();
@@ -26,6 +28,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route
           path="/dashboard"

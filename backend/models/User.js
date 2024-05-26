@@ -18,6 +18,12 @@ const UserSchema = new Schema({
     enum: userRoles,
     required: true,
   },
+  resetPasswordToken: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },
 });
 const User = mongoose.model("user", UserSchema);
 

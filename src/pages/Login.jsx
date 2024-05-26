@@ -172,7 +172,7 @@ const Login = () => {
           <Grid container>
             <Grid item xs>
               <Link
-                to="#"
+                to="/forgot-password"
                 style={{
                   fontSize: 18,
                   textDecoration: "none",
