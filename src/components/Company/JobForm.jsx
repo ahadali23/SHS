@@ -119,8 +119,6 @@ const JobPost = () => {
         deadline,
       });
       console.log(response.data);
-      localStorage.setItem("SHS", response.data.token);
-      navigate("/dashboard");
     } catch (error) {
       console.error("Job post failed:", error.response.data);
     }

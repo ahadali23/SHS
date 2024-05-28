@@ -16,18 +16,24 @@ import {
   Step,
   StepLabel,
   Divider,
+  TablePagination,
 } from "@mui/material";
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
 } from "@mui/icons-material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const steps = ["CV Score", "Test Score", "Interview Score"];
 
 const Row = ({ row }) => {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
+  const handleListItemClick = (row) => {
+    const detailUrl = `/application/${row._id}`;
+    navigate(detailUrl, { state: { row } });
+  };
   return (
     <>
       <TableRow>
@@ -44,7 +50,14 @@ const Row = ({ row }) => {
           {new Date(row.date).toLocaleDateString()}
         </TableCell>
         <TableCell align="center">
-          <Button variant="outlined" color="success" sx={{ mr: 1 }}>
+          <Button
+            variant="outlined"
+            color="success"
+            sx={{ mr: 1 }}
+            onClick={() => {
+              handleListItemClick(row);
+            }}
+          >
             View
           </Button>
           <Button variant="contained" color="error">
@@ -103,7 +116,23 @@ const RecordDetails = () => {
   const location = useLocation();
   const { job, applicants } = location.state || { job: {}, applicants: [] };
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const totalApplicants = applicants.length;
+  const paginatedApplicants = applicants.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <Box m={3}>
@@ -132,6 +161,15 @@ const RecordDetails = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={totalApplicants}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Paper>
     </Box>
   );

@@ -43,6 +43,12 @@ export const companyListItems = (
       </ListItemIcon>
       <ListItemText primary="Candidate Record" />
     </ListItemButton>
+    <ListItemButton id="testButton" component={Link} to="/test">
+      <ListItemIcon>
+        <PsychologyAlt sx={{ color: "#018a82", fontSize: "2.5rem" }} />
+      </ListItemIcon>
+      <ListItemText primary="Technical Test" />
+    </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
         <PsychologyAlt sx={{ color: "#018a82", fontSize: "2.5rem" }} />

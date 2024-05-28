@@ -2,6 +2,7 @@ const express = require("express");
 const connect = require("./config/db");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const { spawn } = require("child_process");
 
 const app = express();
 const port = 3000;
@@ -26,6 +27,7 @@ app.use("/auth", require("./routes/auth"));
 app.use("/user", require("./routes/info"));
 app.use("/file", require("./routes/file"));
 app.use("/job", require("./routes/job"));
+app.use("/test", require("./routes/test"));
 app.use("/apply", require("./routes/apply"));
 
 app.listen(port, () => {

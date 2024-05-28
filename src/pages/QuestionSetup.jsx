@@ -1,10 +1,9 @@
 import React from "react";
 import { Box, Toolbar } from "@mui/material";
 import ComDashContainer from "../components/Company/ComDashContainer";
-import RecordDetails from "../components/Company/RecordDetails";
-import ApplicationDetails from "../components/ApplicationDetails";
+import AddQuestions from "../components/TechTest/AddQuestions";
 
-const CanRecDetails = () => {
+const QuestionSetup = () => {
   return (
     <Box sx={{ display: "flex" }}>
       <ComDashContainer />
@@ -21,11 +20,10 @@ const CanRecDetails = () => {
       >
         <Toolbar />
         {/* here */}
-        <RecordDetails />
-        {/* <ApplicationDetails /> */}
+        <AddQuestions />
       </Box>
     </Box>
   );
 };
 
-export default CanRecDetails;
+export default QuestionSetup;
