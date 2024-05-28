@@ -70,50 +70,64 @@ router.post("/application", (req, res) => {
         return res.status(404).json({ error: "Job post not found" });
       }
 
-      const pythonProcess = spawn("python", [
-        "ml/cvAnalysis.py",
-        req.file.path,
-        jobPost.jobDescription,
-      ]);
-
-      let result = "";
-
-      pythonProcess.stdout.on("data", (data) => {
-        result += data;
+      // Save initial application data to MongoDB
+      const jobApplication = new ApplyJob({
+        firstName,
+        lastName,
+        email,
+        jobID,
+        userID,
+        file: req.file.path,
+        cvScore: null,
       });
 
-      pythonProcess.stderr.on("data", (data) => {
-        console.error(`stderr: ${data}`);
-      });
+      const savedApplication = await jobApplication.save();
 
-      pythonProcess.on("close", async (code) => {
-        if (code !== 0) {
-          console.error(`Python process exited with code ${code}`);
-          return res.status(500).json({ error: "Internal server error" });
-        }
+      // Function to run the Python script and update the application
+      const analyzeCV = (filePath, jobDescription, applicationId) => {
+        const pythonProcess = spawn("python", [
+          "ml/cvAnalysis.py",
+          filePath,
+          jobDescription,
+        ]);
 
-        try {
-          const analysisResult = JSON.parse(result);
+        let result = "";
 
-          // Save application data to MongoDB
-          const jobApplication = new ApplyJob({
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            jobID: jobID,
-            userID: userID,
-            file: req.file.path,
-            cvScore: analysisResult.score,
-          });
+        pythonProcess.stdout.on("data", (data) => {
+          result += data;
+        });
 
-          await jobApplication.save();
+        pythonProcess.stderr.on("data", (data) => {
+          console.error(`stderr: ${data}`);
+        });
 
-          res.json(analysisResult);
-        } catch (parseError) {
-          console.error("Error parsing Python script output:", parseError);
-          res.status(500).json({ error: "Internal server error" });
-        }
-      });
+        pythonProcess.on("close", async (code) => {
+          if (code !== 0) {
+            console.error(`Python process exited with code ${code}`);
+            return;
+          }
+
+          try {
+            const analysisResult = JSON.parse(result);
+            // Convert the CV score and round it
+            const cvScore = Math.round(analysisResult.score * 100);
+
+            // Update the application data with the CV score
+            await ApplyJob.findByIdAndUpdate(applicationId, {
+              cvScore: cvScore,
+            });
+
+            console.log(`Application ${applicationId} updated with CV score`);
+          } catch (parseError) {
+            console.error("Error parsing Python script output:", parseError);
+          }
+        });
+      };
+
+      // Call the analyzeCV function
+      analyzeCV(req.file.path, jobPost.jobDescription, savedApplication._id);
+
+      res.json({ message: "Application received and being processed." });
     } catch (error) {
       console.error("Error processing application:", error);
       return res.status(500).json({ error: "Internal server error" });

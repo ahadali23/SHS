@@ -207,10 +207,10 @@ const JobPost = () => {
                     onChange={(e) => setJobType(e.target.value)}
                     label="Job Type"
                   >
-                    <MenuItem value="full-time">Full Time</MenuItem>
-                    <MenuItem value="part-time">Part Time</MenuItem>
-                    <MenuItem value="contract">Contract</MenuItem>
-                    <MenuItem value="internship">Internship</MenuItem>
+                    <MenuItem value="Full-Time">Full Time</MenuItem>
+                    <MenuItem value="Part-Time">Part Time</MenuItem>
+                    <MenuItem value="Contract">Contract</MenuItem>
+                    <MenuItem value="Internship">Internship</MenuItem>
                   </Select>
                 </FormControl>
                 <TextField

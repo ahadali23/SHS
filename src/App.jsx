@@ -14,6 +14,7 @@ import JobInfo from "./pages/JobInfo";
 import CandidateRecords from "./pages/CandidateRecords";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import CanRecDetails from "./pages/CanRecDetails";
 
 function App() {
   const { loading, userInfo } = useUserInfo();
@@ -45,6 +46,7 @@ function App() {
         <Route path="/postjob" element={<JobPosting />} />
         <Route path="/jobs" element={<BrowseJobs />} />
         <Route path="/candidate-record" element={<CandidateRecords />} />
+        <Route path="/record-details/:job_id" element={<CanRecDetails />} />
         <Route path="/jobs/:companyName/:jobTitle" element={<JobInfo />} />
         <Route path="/interview" element={<Interview />} />
       </Routes>
