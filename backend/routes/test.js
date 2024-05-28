@@ -61,7 +61,7 @@ router.post("/add-questions", async (req, res) => {
     await test.save();
 
     // const OPENAI_API_KEY =
-    //   "sk-proj-9l3x52Bj8GkYRdb2mxyLT3BlbkFJAD7JnqxMhaNlf8fRANhj";
+    //   "";
     // const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
     // const aiModel = "gpt-3.5-turbo"; // Use a model you have access to
