@@ -59,55 +59,6 @@ router.post("/add-questions", async (req, res) => {
 
     // Save the test document
     await test.save();
-
-    // const OPENAI_API_KEY =
-    //   "";
-    // const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
-
-    // const aiModel = "gpt-3.5-turbo"; // Use a model you have access to
-
-    // // Construct the message for the AI model
-    // const messageContent = `Generate ${numberOfQuestions} questions of ${testType} for the ${job.jobTitle}. Also provide answers separately. The response should be in the following format {"questions":[{"id":0,"question":"","options":[],"answer":""},...]}`;
-    // const messages = [
-    //   {
-    //     role: "system",
-    //     content: messageContent,
-    //   },
-    // ];
-
-    // // Generate the questions using OpenAI API
-    // const chatCompletion = await openai.chat.completions.create({
-    //   model: aiModel,
-    //   messages,
-    // });
-
-    // const aiResponse = chatCompletion.choices[0].message.content;
-    // const jsonResponse = JSON.parse(aiResponse);
-
-    // console.log(jsonResponse);
-
-    // if (jsonResponse.questions && jsonResponse.questions.length > 0) {
-    //   // Save each generated question to the Question schema
-    //   const savedQuestions = [];
-    //   for (const q of jsonResponse.questions) {
-    //     const newQuestion = new Question({
-    //       test: test._id,
-    //       question: q.question,
-    //       options: q.options || [], // Add options, if not provided
-    //       answer: q.answer,
-    //       job_id: job_id, // Add job_id
-    //     });
-    //     const savedQuestion = await newQuestion.save();
-    //     savedQuestions.push(savedQuestion);
-    //   }
-    //   res.status(200).json({
-    //     message: "Test added successfully.",
-    //     questions: savedQuestions,
-    //   });
-    // } else {
-    //   // If questions cannot be generated, provide sample questions and save them
-
-    // }
     const sampleQuestions = [
       {
         id: 0,
