@@ -1,5 +1,4 @@
 const express = require("express");
-const OpenAI = require("openai");
 const TestAdd = require("../models/Test");
 const Question = require("../models/Questions");
 const JobPosting = require("../models/JobPosting");
