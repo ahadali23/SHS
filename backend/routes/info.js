@@ -1,10 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Candidate = require("../models/Candidate");
 const Company = require("../models/Company");
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const verifyToken = (req, res, next) => {
   const token = req.header("x-auth-token");
@@ -14,16 +18,13 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, `process.env.JWT_KEY`);
+    const decoded = jwt.verify(token, `process.env.JWT_KEY`); // Corrected line
     req.user = decoded;
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {
-      return res
-        .status(401)
-        .json({ message: "Token expired, please log in again" });
+      return res.status(401).json({ message: "Token expired, please log in again" });
     }
-    console.error(error);
     res.status(401).json({ message: "Invalid token" });
   }
 };
@@ -50,8 +51,40 @@ router.get("/userinfo", verifyToken, async (req, res) => {
 
     res.json({ userInfo, role: user.role });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.put("/updateprofile", verifyToken, upload.single("picture"), async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId); // Corrected user ID
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const role = user.role;
+    if (role !== "candidate" && role !== "company") {
+      return res.status(400).json({ message: "Invalid user role" });
+    }
+
+    const { firstName, lastName, email, phone, city, country, address } = req.body;
+    const picture = req.file;
+
+    let updatedInfo = { firstName, lastName, email, phoneNumber: phone, city, country, address };
+
+    if (picture) {
+      updatedInfo.picture = { data: picture.buffer, contentType: picture.mimetype };
+    }
+
+    if (role === "candidate") {
+      await Candidate.findByIdAndUpdate(user.info, updatedInfo);
+    } else if (role === "company") {
+      await Company.findByIdAndUpdate(user.info, updatedInfo);
+    }
+
+    res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
 });
 

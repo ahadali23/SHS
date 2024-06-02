@@ -113,7 +113,7 @@ export const candidateListItems = (
 
 export const secondaryListItems = (
   <React.Fragment>
-    <ListItemButton>
+    <ListItemButton id="settingButton" component={Link} to="/setting">
       <ListItemIcon>
         <Settings sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>

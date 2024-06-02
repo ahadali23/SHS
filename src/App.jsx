@@ -18,6 +18,7 @@ import CanRecDetails from "./pages/CanRecDetails";
 import ApplicantInfo from "./pages/ApplicantInfo";
 import QuestionSetup from "./pages/QuestionSetup";
 import Test from "./pages/Test";
+import Settings from "./pages/Settings";
 
 function App() {
   const { loading, userInfo } = useUserInfo();
@@ -55,6 +56,7 @@ function App() {
         <Route path="/add-questions/:job_id" element={<QuestionSetup />} />
         <Route path="/jobs/:companyName/:jobTitle" element={<JobInfo />} />
         <Route path="/interview" element={<Interview />} />
+        <Route path="/setting" element={<Settings />} />
       </Routes>
     </Router>
   );

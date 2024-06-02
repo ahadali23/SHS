@@ -1,9 +1,9 @@
 import React from "react";
+import ProfileSetting from "../components/ProfileSetting";
 import { Box, Toolbar } from "@mui/material";
 import CDashContainer from "../components/Candidate/CDashContainer";
-import InterviewScreen from "../components/Interview/InterviewScreen";
 
-const Interview = () => {
+const Setting = () => {
   return (
     <Box sx={{ display: "flex" }}>
       <CDashContainer />
@@ -20,10 +20,10 @@ const Interview = () => {
       >
         <Toolbar />
         {/* here */}
-        <InterviewScreen />
+        <ProfileSetting />
       </Box>
     </Box>
   );
 };
 
-export default Interview;
+export default Setting;
