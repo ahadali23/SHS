@@ -10,22 +10,31 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUserInfo } from "../../hooks/useUserInfo";
 
 const TestSetup = () => {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  const { userInfo } = useUserInfo();
 
   useEffect(() => {
     const fetchJobs = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/job/get");
-        setJobs(response.data);
-      } catch (error) {
-        console.error("Error fetching job listings:", error);
+      if (userInfo?.info?.companyName) {
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/job/get/${userInfo.info.companyName}`
+          );
+          setJobs(response.data);
+          setLoaded(true);
+        } catch (error) {
+          console.error("Error fetching job listings:", error);
+        }
       }
     };
     fetchJobs();
-  }, []);
+  }, [userInfo]);
 
   const handleListItemClick = (job) => {
     const detailUrl = `/add-questions/${job._id}`;
@@ -39,11 +48,28 @@ const TestSetup = () => {
       {jobs.length > 0 ? (
         <Paper elevation={3}>
           <List>
-            {jobs.map((job) => (
+            {jobs.map((job, index) => (
               <ListItem
                 key={job._id}
                 divider
                 onClick={() => handleListItemClick(job)}
+                sx={{
+                  opacity: loaded ? 1 : 0,
+                  transform: loaded ? "translateY(0)" : "translateY(20px)",
+                  transition: `opacity 0.5s ease ${
+                    index * 0.1
+                  }s, transform 0.5s ease ${index * 0.1}s`,
+                  my: 2,
+                  "&:hover": {
+                    transform: "translate(10px, -5px)",
+                    transition: "transform 0.3s ease",
+                    cursor: "pointer",
+                  },
+                  "&:focus": {
+                    transform: "translate(10px, -5px)",
+                    transition: "transform 0.3s ease",
+                  },
+                }}
               >
                 <ListItemText primary={job.jobTitle} />
               </ListItem>
