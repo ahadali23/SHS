@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const JobPosting = require("../models/JobPosting");
+const ApplyJob = require("../models/ApplyJob");
 
 router.get("/get", async (req, res) => {
   try {
@@ -16,7 +17,15 @@ router.get("/get/:companyName", async (req, res) => {
   const { companyName } = req.params;
   try {
     const jobPostings = await JobPosting.find({ companyName });
-    res.json(jobPostings);
+    const jobPostingsWithCounts = await Promise.all(
+      jobPostings.map(async (job) => {
+        const applicantCount = await ApplyJob.countDocuments({
+          jobID: job._id,
+        });
+        return { ...job.toObject(), applicantCount };
+      })
+    );
+    res.json(jobPostingsWithCounts);
   } catch (err) {
     console.error("Error fetching job postings:", err);
     res.status(500).json({ message: "Server error" });

@@ -10,44 +10,43 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUserInfo } from "../../hooks/useUserInfo";
 
 const Records = () => {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
 
+  const { userInfo } = useUserInfo();
+
   useEffect(() => {
     const fetchJobs = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/job/get");
-        setJobs(response.data);
-      } catch (error) {
-        console.error("Error fetching job listings:", error);
+      if (userInfo?.info?.companyName) {
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/job/get/${userInfo.info.companyName}`
+          );
+          setJobs(response.data);
+        } catch (error) {
+          console.error("Error fetching job listings:", error);
+        }
       }
     };
-
-    const fetchApplicants = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/apply/get");
-        setApplicants(response.data);
-      } catch (error) {
-        console.error("Error fetching applicants:", error);
-      }
-    };
-
     fetchJobs();
-    fetchApplicants();
-  }, []);
+  }, [userInfo]);
 
-  const handleListItemClick = (job) => {
-    console.log("Jobs:", jobs);
-    console.log("Applicants:", applicants);
-    const detailUrl = `/record-details/${job._id}`;
-    navigate(detailUrl, { state: { job, applicants } });
-  };
-
-  const countApplicantsForJob = (jobId) => {
-    return applicants.filter((applicant) => applicant.jobID === jobId).length;
+  const handleListItemClick = async (job) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/apply/get/${job._id}`
+      );
+      const applicantsForJob = response.data;
+      console.log(applicantsForJob);
+      const detailUrl = `/record-details/${job._id}`;
+      navigate(detailUrl, { state: { job, applicants: applicantsForJob } });
+    } catch (error) {
+      console.error("Error fetching applicants for job:", error);
+    }
   };
 
   return (
@@ -66,9 +65,7 @@ const Records = () => {
               >
                 <ListItemText
                   primary={job.jobTitle}
-                  secondary={`Total Applicants: ${countApplicantsForJob(
-                    job._id
-                  )}`}
+                  secondary={`Total Applicants: ${job.applicantCount}`}
                 />
               </ListItem>
             ))}

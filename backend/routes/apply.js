@@ -38,12 +38,13 @@ function checkFileType(file, cb) {
   }
 }
 
-router.get("/get", async (req, res) => {
+router.get("/get/:jobId", async (req, res) => {
+  const { jobId } = req.params;
   try {
-    const Applicants = await ApplyJob.find();
-    res.json(Applicants);
+    const applicants = await ApplyJob.find({ jobID: jobId });
+    res.json(applicants);
   } catch (err) {
-    console.error("Error fetching  Applicants:", err);
+    console.error("Error fetching Applicants:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
