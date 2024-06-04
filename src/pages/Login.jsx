@@ -9,23 +9,24 @@ import {
   Grid,
   Checkbox,
   InputAdornment,
-  Alert,
+  Slide,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { Email, Key } from "@mui/icons-material";
 import axios from "axios";
 import { LoadingButton } from "@mui/lab";
+import CustomSnackbar from "../components/CustomSnackbar";
 
-axios.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response.status === 401) {
-      localStorage.removeItem("SHS");
-      window.location.href = "/"; // Redirect to login page
-    }
-    return Promise.reject(error);
-  }
-);
+// axios.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     if (error.response.status === 401) {
+//       localStorage.removeItem("SHS");
+//       window.location.href = "/"; // Redirect to login page
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 const Login = () => {
   const navigate = useNavigate();
@@ -33,12 +34,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError(""); // Reset error message
+    setMessage(null); // Reset error message
     console.log(username + " " + password + " " + rememberMe);
     try {
       const response = await axios.post("http://localhost:3000/auth/login", {
@@ -46,22 +47,32 @@ const Login = () => {
         password,
         rememberMe,
       });
-      console.log(response.data);
+      setMessage({
+        type: "success",
+        text: "Login Successfully! Welcome",
+      });
       localStorage.setItem("SHS", response.data.token);
       setLoading(false);
       navigate("/dashboard");
     } catch (error) {
       setLoading(false);
       if (error.response && error.response.data) {
-        setError("Invalid username or password");
+        setMessage({ type: "error", text: "Invalid username or password" });
       } else {
-        setError("An error occurred. Please try again.");
+        setMessage({
+          type: "error",
+          text: "An error occurred. Please try again.",
+        });
       }
       console.error(
         "Login failed:",
         error.response ? error.response.data : error
       );
     }
+  };
+
+  const handleClose = () => {
+    setMessage(null);
   };
 
   useEffect(() => {
@@ -88,10 +99,15 @@ const Login = () => {
           Sign in
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          {error && (
-            <Alert severity="error" sx={{ m: 1 }}>
-              {error}
-            </Alert>
+          {message && (
+            <CustomSnackbar
+              open={true}
+              autoHideDuration={2000}
+              onClose={handleClose}
+              transistion={Slide}
+              severity={message.type}
+              message={message.text}
+            />
           )}
           <TextField
             margin="normal"
