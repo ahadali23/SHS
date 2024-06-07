@@ -6,6 +6,7 @@ import {
   Divider,
   Typography,
   InputBase,
+  Box,
 } from "@mui/material";
 import {
   ChevronLeft,
@@ -16,18 +17,25 @@ import {
 } from "@mui/icons-material";
 import SHSBar from "../SHSBar";
 import SHSDrawer from "../SHSDrawer";
-import {
-  candidateListItems,
-  secondaryListItems,
-} from "../ListItems";
+import NotificationPopover from "../NotificationPopover"; // Import the new component
+import { candidateListItems, secondaryListItems } from "../ListItems";
 import { useUserInfo } from "../../hooks/useUserInfo";
 
 const CDashContainer = () => {
   const [open, setOpen] = useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
   const { loading, userInfo } = useUserInfo();
 
   const toggleDrawer = () => {
     setOpen(!open);
+  };
+
+  const handleNotificationsClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationsClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -71,9 +79,9 @@ const CDashContainer = () => {
               placeholder="Search..."
               sx={{
                 color: "#018a82",
-                borderRadius: "20px", // Adjust the value for the desired radius
+                borderRadius: "20px",
                 backgroundColor: "white",
-                paddingLeft: "40px", // Space for the icon
+                paddingLeft: "40px",
               }}
             />
             <Search
@@ -82,8 +90,8 @@ const CDashContainer = () => {
                 color: "#018a82",
                 fontSize: "25px",
                 position: "absolute",
-                left: "10px", // Adjust the value for the desired position
-                zIndex: 1, // Set a higher zIndex value
+                left: "10px",
+                zIndex: 1,
               }}
             />
           </div>
@@ -92,9 +100,14 @@ const CDashContainer = () => {
               fontSize: "1rem",
               color: "white",
             }}
+            onClick={handleNotificationsClick}
           >
             <Notifications />
           </IconButton>
+          <NotificationPopover
+            anchorEl={anchorEl}
+            handleClose={handleNotificationsClose}
+          />
           <Typography
             component="h1"
             variant="h6"
