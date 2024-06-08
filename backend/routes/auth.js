@@ -100,7 +100,7 @@ router.post("/candidatesignup", async (req, res) => {
       phoneNumber,
       city,
       country,
-      picture: undefined,
+      picture: null,
       userId: savedUser._id,
     });
 

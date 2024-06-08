@@ -22,6 +22,8 @@ import {
   LinkedIn,
   WhatsApp,
 } from "@mui/icons-material";
+import axios from "axios";
+import avatar1 from "../assets/avatar.png";
 
 const ProfileOverview = ({ userInfo }) => {
   return (
@@ -187,7 +189,7 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
     firstName: userInfo.firstName || "",
     lastName: userInfo.lastName || "",
     email: userInfo.email || "",
-    phone: userInfo.phone || "",
+    phone: userInfo.phoneNumber || "",
     city: userInfo.city || "",
     country: userInfo.country || "",
     address: userInfo.address || "",
@@ -201,6 +203,12 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
       [name]: value,
     });
   };
+
+  useEffect(() => {
+    if (profilePic) {
+      console.log(profilePic);
+    }
+  }, [profilePic]);
 
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
@@ -238,9 +246,10 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
   return (
     <Box sx={{ p: 2 }}>
       <form onSubmit={handleSubmit}>
-        <Typography variant="h5" gutterBottom>
-          Profile Settings
-        </Typography>
+        <Avatar
+          src={profilePic}
+          sx={{ width: 100, height: 100, mb: 2, alignItems: "center" }}
+        />
         <TextField
           fullWidth
           label="First Name"
@@ -318,37 +327,45 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
 
 const ProfileSetting = () => {
   const [tabIndex, setTabIndex] = useState(0);
-  const [userInfo, setUserInfo] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    city: "",
-    country: "",
-    address: "",
-    picture: null,
-  });
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    // Fetch user info from API or state management
-    // Assuming this data comes from an API or context
-    const fetchedUserInfo = {
-      firstName: "Jansh",
-      lastName: "Dickens",
-      email: "Jansh@gmail.com",
-      phone: "+2 345 678 0000",
-      city: "New Caledonia",
-      country: "New Caledonia",
-      address: "Some address",
-      picture: null, // Assuming this is the base64 string of the picture
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem("SHS");
+        if (!token) {
+          throw new Error("No token found");
+        }
+        const response = await axios.get(
+          "http://localhost:3000/user/userinfo",
+          {
+            headers: {
+              "x-auth-token": token,
+            },
+          }
+        );
+        const { userInfo } = response.data; // Access user property
+
+        // Convert binary data to base64 string
+        const contentType = response.headers["content-type"];
+        const base64String = `data:${contentType};base64,${btoa(
+          new Uint8Array(response.data).reduce(
+            (data, byte) => data + String.fromCharCode(byte),
+            ""
+          )
+        )}`;
+
+        setUserInfo({
+          ...userInfo,
+          picture: userInfo.picture ? base64String : avatar1,
+        });
+        console.log(userInfo);
+      } catch (error) {
+        console.error("Error fetching user info", error);
+      }
     };
-    setUserInfo({
-      ...userInfo,
-      ...fetchedUserInfo,
-      picture: fetchedUserInfo.picture
-        ? `data:${fetchedUserInfo.picture.contentType};base64,${fetchedUserInfo.picture.data}`
-        : "/assets/avatar.png",
-    });
+
+    fetchUserInfo();
   }, []);
 
   const handleTabChange = (event, newValue) => {
@@ -370,10 +387,12 @@ const ProfileSetting = () => {
           }}
         >
           <Avatar
-            src={userInfo.picture}
+            src={userInfo?.picture}
             sx={{ width: 100, height: 100, mb: 2 }}
           />
-          <Typography variant="h6">Jansh Dickens</Typography>
+          <Typography variant="h6">
+            {userInfo?.firstName} {userInfo?.lastName}
+          </Typography>
           <Typography variant="subtitle1" color="textSecondary">
             Developer
           </Typography>
@@ -391,19 +410,19 @@ const ProfileSetting = () => {
               <ListItemIcon>
                 <Email />
               </ListItemIcon>
-              <ListItemText primary="Jansh@gmail.com" />
+              <ListItemText primary={userInfo?.email || "N/A"} />
             </ListItem>
             <ListItem>
               <ListItemIcon>
                 <Phone />
               </ListItemIcon>
-              <ListItemText primary="+2 345 678 0000" />
+              <ListItemText primary={userInfo?.phoneNumber || "N/A"} />
             </ListItem>
             <ListItem>
               <ListItemIcon>
                 <LocationOn />
               </ListItemIcon>
-              <ListItemText primary="New Caledonia" />
+              <ListItemText primary={userInfo?.city || "N/A"} />
             </ListItem>
           </List>
         </Box>
