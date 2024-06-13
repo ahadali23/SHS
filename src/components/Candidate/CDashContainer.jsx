@@ -7,14 +7,9 @@ import {
   Typography,
   InputBase,
   Box,
+  Avatar,
 } from "@mui/material";
-import {
-  ChevronLeft,
-  Menu,
-  Notifications,
-  Person,
-  Search,
-} from "@mui/icons-material";
+import { ChevronLeft, Menu, Notifications, Search } from "@mui/icons-material";
 import SHSBar from "../SHSBar";
 import SHSDrawer from "../SHSDrawer";
 import NotificationPopover from "../NotificationPopover"; // Import the new component
@@ -41,11 +36,7 @@ const CDashContainer = () => {
   return (
     <>
       <SHSBar position="absolute" open={open}>
-        <Toolbar
-          sx={{
-            pr: "24px",
-          }}
-        >
+        <Toolbar sx={{ pr: "24px" }}>
           <IconButton
             edge="start"
             color="inherit"
@@ -67,8 +58,8 @@ const CDashContainer = () => {
           >
             Dashboard
           </Typography>
-          <div
-            style={{
+          <Box
+            sx={{
               display: "flex",
               alignItems: "center",
               position: "relative",
@@ -94,12 +85,9 @@ const CDashContainer = () => {
                 zIndex: 1,
               }}
             />
-          </div>
+          </Box>
           <IconButton
-            sx={{
-              fontSize: "1rem",
-              color: "white",
-            }}
+            sx={{ fontSize: "1rem", color: "white" }}
             onClick={handleNotificationsClick}
           >
             <Notifications />
@@ -109,36 +97,26 @@ const CDashContainer = () => {
             handleClose={handleNotificationsClose}
           />
           <Typography
-            component="h1"
+            component="div"
             variant="h6"
             color="inherit"
             noWrap
-            sx={{
-              color: "white",
-              m: "2px 5px",
-              p: "2px 5px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            sx={{ display: "flex", alignItems: "center" }}
           >
             {loading ? (
               "Loading..."
             ) : (
               <>
-                {userInfo &&
-                  userInfo.info.firstName + " " + userInfo.info.lastName}{" "}
-                <IconButton
-                  sx={{
-                    borderRadius: "50%",
-                    backgroundColor: "white",
-                    color: "#018a82",
-                    fontSize: "1rem",
-                    ml: "5px",
-                  }}
-                >
-                  <Person />
-                </IconButton>
+                {userInfo && (
+                  <>
+                    {userInfo.info.firstName} {userInfo.info.lastName}
+                    <Avatar
+                      sx={{ ml: 2 }}
+                      src={userInfo.info.picture || "path_to_default_avatar"}
+                      alt={`${userInfo.info.firstName} ${userInfo.info.lastName}`}
+                    />
+                  </>
+                )}
               </>
             )}
           </Typography>

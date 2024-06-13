@@ -22,7 +22,7 @@ const CandidateSchema = new Schema({
   },
   address: {
     type: String,
-    required: true,
+    // required: true,
   },
   city: {
     type: String,
@@ -33,8 +33,7 @@ const CandidateSchema = new Schema({
     required: true,
   },
   picture: {
-    data: Buffer,
-    contentType: String,
+    type: String,
   },
   userId: {
     type: Schema.Types.ObjectId,

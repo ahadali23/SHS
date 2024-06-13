@@ -23,7 +23,6 @@ import {
   WhatsApp,
 } from "@mui/icons-material";
 import axios from "axios";
-import avatar1 from "../assets/avatar.png";
 
 const ProfileOverview = ({ userInfo }) => {
   return (
@@ -58,7 +57,9 @@ const ProfileOverview = ({ userInfo }) => {
             primary="BCA - Bachelor of Computer Applications"
             secondary={
               <>
-                International University - (2004 - 2010)
+                <Typography variant="body2" color="textSecondary">
+                  International University - (2004 - 2010)
+                </Typography>
                 <Typography variant="body2" color="textSecondary">
                   There are many variations of passages of available, but the
                   majority alteration in some form. As a highly skilled and
@@ -79,7 +80,9 @@ const ProfileOverview = ({ userInfo }) => {
             primary="MCA - Master of Computer Application"
             secondary={
               <>
-                International University - (2010 - 2012)
+                <Typography variant="body2" color="textSecondary">
+                  International University - (2010 - 2012)
+                </Typography>
                 <Typography variant="body2" color="textSecondary">
                   There are many variations of passages of available, but the
                   majority alteration in some form. As a highly skilled and
@@ -100,7 +103,9 @@ const ProfileOverview = ({ userInfo }) => {
             primary="Design Communication Visual"
             secondary={
               <>
-                International University - (2012 - 2015)
+                <Typography variant="body2" color="textSecondary">
+                  International University - (2012 - 2015)
+                </Typography>
                 <Typography variant="body2" color="textSecondary">
                   There are many variations of passages of available, but the
                   majority alteration in some form. As a highly skilled and
@@ -126,7 +131,9 @@ const ProfileOverview = ({ userInfo }) => {
             primary="Web Design & Development Team Leader"
             secondary={
               <>
-                International University - (2012 - 2015)
+                <Typography variant="body2" color="textSecondary">
+                  International University - (2012 - 2015)
+                </Typography>
                 <Typography variant="body2" color="textSecondary">
                   There are many variations of passages of available, but the
                   majority alteration in some form. As a highly skilled and
@@ -147,7 +154,9 @@ const ProfileOverview = ({ userInfo }) => {
             primary="Senior Software Engineer"
             secondary={
               <>
-                International University - (2015 - 2018)
+                <Typography variant="body2" color="textSecondary">
+                  International University - (2015 - 2018)
+                </Typography>
                 <Typography variant="body2" color="textSecondary">
                   There are many variations of passages of available, but the
                   majority alteration in some form. As a highly skilled and
@@ -168,7 +177,9 @@ const ProfileOverview = ({ userInfo }) => {
             primary="Project Manager"
             secondary={
               <>
-                International University - (2018 - Present)
+                <Typography variant="body2" color="textSecondary">
+                  International University - (2018 - Present)
+                </Typography>
                 <Typography variant="body2" color="textSecondary">
                   There are many variations of passages of available, but the
                   majority alteration in some form. As a highly skilled and
@@ -195,6 +206,9 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
     address: userInfo.address || "",
   });
   const [profilePic, setProfilePic] = useState(null);
+  const [profilePicPreview, setProfilePicPreview] = useState(
+    userInfo.picture || avatar1
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -204,15 +218,10 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
     });
   };
 
-  useEffect(() => {
-    if (profilePic) {
-      console.log(profilePic);
-    }
-  }, [profilePic]);
-
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
     setProfilePic(file);
+    setProfilePicPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
@@ -247,7 +256,7 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
     <Box sx={{ p: 2 }}>
       <form onSubmit={handleSubmit}>
         <Avatar
-          src={profilePic}
+          src={profilePicPreview}
           sx={{ width: 100, height: 100, mb: 2, alignItems: "center" }}
         />
         <TextField
@@ -328,43 +337,31 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
 const ProfileSetting = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem("SHS");
+      if (!token) {
+        throw new Error("No token found");
+      }
+      const response = await axios.get("http://localhost:3000/user/userinfo", {
+        headers: {
+          "x-auth-token": token,
+        },
+      });
+      const userInfo = response.data.userInfo;
+      setUserInfo({
+        ...userInfo,
+        picture: userInfo.picture || avatar1,
+      });
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching user info", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const token = localStorage.getItem("SHS");
-        if (!token) {
-          throw new Error("No token found");
-        }
-        const response = await axios.get(
-          "http://localhost:3000/user/userinfo",
-          {
-            headers: {
-              "x-auth-token": token,
-            },
-          }
-        );
-        const { userInfo } = response.data; // Access user property
-
-        // Convert binary data to base64 string
-        const contentType = response.headers["content-type"];
-        const base64String = `data:${contentType};base64,${btoa(
-          new Uint8Array(response.data).reduce(
-            (data, byte) => data + String.fromCharCode(byte),
-            ""
-          )
-        )}`;
-
-        setUserInfo({
-          ...userInfo,
-          picture: userInfo.picture ? base64String : avatar1,
-        });
-        console.log(userInfo);
-      } catch (error) {
-        console.error("Error fetching user info", error);
-      }
-    };
-
     fetchUserInfo();
   }, []);
 
@@ -374,7 +371,12 @@ const ProfileSetting = () => {
 
   const handleProfileUpdate = () => {
     // Logic to handle profile update, e.g., refetch user info
+    fetchUserInfo();
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Box sx={{ display: "flex", p: 3, bgcolor: "#f5f5f5", minHeight: "100vh" }}>
@@ -387,11 +389,11 @@ const ProfileSetting = () => {
           }}
         >
           <Avatar
-            src={userInfo?.picture}
+            src={userInfo.picture}
             sx={{ width: 100, height: 100, mb: 2 }}
           />
           <Typography variant="h6">
-            {userInfo?.firstName} {userInfo?.lastName}
+            {userInfo.firstName} {userInfo.lastName}
           </Typography>
           <Typography variant="subtitle1" color="textSecondary">
             Developer
@@ -410,19 +412,19 @@ const ProfileSetting = () => {
               <ListItemIcon>
                 <Email />
               </ListItemIcon>
-              <ListItemText primary={userInfo?.email || "N/A"} />
+              <ListItemText primary={userInfo.email || "N/A"} />
             </ListItem>
             <ListItem>
               <ListItemIcon>
                 <Phone />
               </ListItemIcon>
-              <ListItemText primary={userInfo?.phoneNumber || "N/A"} />
+              <ListItemText primary={userInfo.phoneNumber || "N/A"} />
             </ListItem>
             <ListItem>
               <ListItemIcon>
                 <LocationOn />
               </ListItemIcon>
-              <ListItemText primary={userInfo?.city || "N/A"} />
+              <ListItemText primary={userInfo.city || "N/A"} />
             </ListItem>
           </List>
         </Box>

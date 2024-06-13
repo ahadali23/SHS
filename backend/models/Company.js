@@ -27,6 +27,9 @@ const CompanySchema = new Schema({
     type: String,
     required: true,
   },
+  picture: {
+    type: String,
+  },
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",

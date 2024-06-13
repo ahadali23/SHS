@@ -1,139 +1,85 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
 const { spawn } = require("child_process");
 const ApplyJob = require("../models/ApplyJob");
 const JobPost = require("../models/JobPosting");
+const upload = require("../storage");
+const { gfs } = require("../config/db");
 
-// Multer configuration for file upload
-const storage = multer.diskStorage({
-  destination: "./uploads/",
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 1000000 }, // Limit to 1MB
-  fileFilter: (req, file, cb) => {
-    checkFileType(file, cb);
-  },
-}).single("file");
-
-// Check file type
-function checkFileType(file, cb) {
-  const filetypes = /pdf/;
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype);
-
-  if (mimetype && extname) {
-    return cb(null, true);
-  } else {
-    cb("Error: PDFs Only!");
-  }
-}
-
-router.get("/get/:jobId", async (req, res) => {
-  const { jobId } = req.params;
+router.post("/application", upload.single("file"), async (req, res) => {
   try {
-    const applicants = await ApplyJob.find({ jobID: jobId });
-    res.json(applicants);
-  } catch (err) {
-    console.error("Error fetching Applicants:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+    const { firstName, lastName, email, jobID, userID } = req.body;
 
-// Endpoint to submit a job application
-router.post("/application", (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) {
-      console.error("Error uploading file:", err);
-      return res.status(400).json({ error: err });
+    if (!firstName || !lastName || !email || !jobID || !userID) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    try {
-      const { firstName, lastName, email, jobID, userID } = req.body;
+    const jobPost = await JobPost.findById(jobID);
+    if (!jobPost) {
+      return res.status(404).json({ error: "Job post not found" });
+    }
 
-      // Validate request data
-      if (!firstName || !lastName || !email || !jobID || !userID) {
-        return res.status(400).json({ error: "Missing required fields" });
-      }
+    console.log("File uploaded:", req.file);
 
-      // Fetch job requirements from the database
-      const jobPost = await JobPost.findById(jobID);
-      if (!jobPost) {
-        return res.status(404).json({ error: "Job post not found" });
-      }
+    const jobApplication = new ApplyJob({
+      firstName,
+      lastName,
+      email,
+      jobID,
+      userID,
+      file: req.file.id, // Store GridFS file ID
+      cvScore: null,
+    });
 
-      // Save initial application data to MongoDB
-      const jobApplication = new ApplyJob({
-        firstName,
-        lastName,
-        email,
-        jobID,
-        userID,
-        file: req.file.path,
-        cvScore: null,
+    const savedApplication = await jobApplication.save();
+
+    const analyzeCV = (fileId, jobDescription, applicationId) => {
+      const readstream = gfs.createReadStream({ _id: fileId, root: "uploads" });
+
+      let result = "";
+
+      const pythonProcess = spawn(
+        "python",
+        ["ml/cvAnalysis.py", jobDescription],
+        {
+          stdio: ["pipe", "pipe", process.stderr],
+        }
+      );
+
+      readstream.pipe(pythonProcess.stdin);
+
+      pythonProcess.stdout.on("data", (data) => {
+        result += data;
       });
 
-      const savedApplication = await jobApplication.save();
+      pythonProcess.on("close", async (code) => {
+        if (code !== 0) {
+          console.error(`Python process exited with code ${code}`);
+          return;
+        }
 
-      // Function to run the Python script and update the application
-      const analyzeCV = (filePath, jobDescription, applicationId) => {
-        const pythonProcess = spawn("python", [
-          "ml/cvAnalysis.py",
-          filePath,
-          jobDescription,
-        ]);
+        try {
+          const analysisResult = JSON.parse(result);
+          const cvScore = Math.round(analysisResult.score * 100);
 
-        let result = "";
+          await ApplyJob.findByIdAndUpdate(applicationId, {
+            cvScore: cvScore,
+          });
 
-        pythonProcess.stdout.on("data", (data) => {
-          result += data;
-        });
+          console.log(`Application ${applicationId} updated with CV score`);
+        } catch (parseError) {
+          console.error("Error parsing Python script output:", parseError);
+        }
+      });
+    };
 
-        pythonProcess.stderr.on("data", (data) => {
-          console.error(`stderr: ${data}`);
-        });
+    analyzeCV(req.file.id, jobPost.jobDescription, savedApplication._id);
 
-        pythonProcess.on("close", async (code) => {
-          if (code !== 0) {
-            console.error(`Python process exited with code ${code}`);
-            return;
-          }
-
-          try {
-            const analysisResult = JSON.parse(result);
-            // Convert the CV score and round it
-            const cvScore = Math.round(analysisResult.score * 100);
-
-            // Update the application data with the CV score
-            await ApplyJob.findByIdAndUpdate(applicationId, {
-              cvScore: cvScore,
-            });
-
-            console.log(`Application ${applicationId} updated with CV score`);
-          } catch (parseError) {
-            console.error("Error parsing Python script output:", parseError);
-          }
-        });
-      };
-
-      // Call the analyzeCV function
-      analyzeCV(req.file.path, jobPost.jobDescription, savedApplication._id);
-
-      res.json({ message: "Application received and being processed." });
-    } catch (error) {
-      console.error("Error processing application:", error);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-  });
+    res.json({ message: "Application received and being processed." });
+  } catch (error) {
+    console.error("Error processing application:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 module.exports = router;

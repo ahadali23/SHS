@@ -1,14 +1,12 @@
-require("dotenv").config();
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Candidate = require("../models/Candidate");
 const Company = require("../models/Company");
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = require("../storage"); // Import multer config
+const path = require("path");
+const fs = require("fs");
 
 const verifyToken = (req, res, next) => {
   const token = req.header("x-auth-token");
@@ -40,7 +38,6 @@ router.get("/userinfo", verifyToken, async (req, res) => {
     }
 
     let userInfo;
-
     if (user.role === "candidate") {
       userInfo = await Candidate.findOne({ userId: user._id });
     } else if (user.role === "company") {
@@ -49,6 +46,15 @@ router.get("/userinfo", verifyToken, async (req, res) => {
 
     if (!userInfo) {
       return res.status(404).json({ message: "User information not found" });
+    }
+
+    if (userInfo.picture) {
+      const filePath = path.join(__dirname, "..", userInfo.picture);
+      const fileData = fs.readFileSync(filePath);
+      const base64Image = `data:image/png;base64,${fileData.toString(
+        "base64"
+      )}`;
+      userInfo.picture = base64Image;
     }
 
     res.json({ userInfo, role: user.role });
@@ -88,18 +94,15 @@ router.put(
       };
 
       if (picture) {
-        updatedInfo.picture = {
-          data: picture.buffer,
-          contentType: picture.mimetype,
-        };
+        updatedInfo.picture = path.join(
+          "uploads",
+          req.user.userId.toString(),
+          picture.filename
+        ); // Store the file path
       }
 
       if (role === "candidate") {
-        const up = await Candidate.findOneAndUpdate(
-          { userId: user._id },
-          updatedInfo
-        );
-        console.log(up);
+        await Candidate.findOneAndUpdate({ userId: user._id }, updatedInfo);
       } else if (role === "company") {
         await Company.findOneAndUpdate({ userId: user._id }, updatedInfo);
       }
@@ -110,5 +113,19 @@ router.put(
     }
   }
 );
+
+router.get("/files/:userId/:fileName", verifyToken, (req, res) => {
+  const userId = req.params.userId;
+  const fileName = req.params.fileName;
+  const filePath = path.join(__dirname, "..", "uploads", userId, fileName);
+
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    res.sendFile(filePath);
+  });
+});
 
 module.exports = router;
