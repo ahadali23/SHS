@@ -106,6 +106,7 @@ router.post("/candidatesignup", async (req, res) => {
 
     await candidate.save();
 
+    console.log('saving candidate')
     res.json({
       message: "Signup Successfully",
       token,

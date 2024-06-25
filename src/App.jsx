@@ -19,6 +19,8 @@ import ApplicantInfo from "./pages/ApplicantInfo";
 import QuestionSetup from "./pages/QuestionSetup";
 import Test from "./pages/Test";
 import Settings from "./pages/Settings";
+import CandidateTest from "./components/Candidate/CandidateTest";
+import TechnicalTest from "./pages/TechnicalTest";
 
 function App() {
   const { loading, userInfo } = useUserInfo();
@@ -51,6 +53,7 @@ function App() {
         <Route path="/jobs" element={<BrowseJobs />} />
         <Route path="/candidate-record" element={<CandidateRecords />} />
         <Route path="/test" element={<Test />} />
+        <Route path="/technical" element={<TechnicalTest />} />
         <Route path="/record-details/:job_id" element={<CanRecDetails />} />
         <Route path="/application/:applicant_id" element={<ApplicantInfo />} />
         <Route path="/add-questions/:job_id" element={<QuestionSetup />} />

@@ -22,7 +22,7 @@ const CandidateSchema = new Schema({
   },
   address: {
     type: String,
-    // required: true,
+    required: false,
   },
   city: {
     type: String,

@@ -21,6 +21,92 @@ const testTypes = [
   { value: "short-answer", label: "Short Answer" },
 ];
 
+const sampleQuestions = [
+  {
+    id: 0,
+    question:
+      "Which of the following is not a programming language commonly used in full-stack development?",
+    options: ["Java", "Python", "HTML", "C#"],
+    answer: "HTML",
+  },
+  {
+    id: 1,
+    question:
+      "Which database type is often associated with full-stack development?",
+    options: ["Relational", "NoSQL", "Both", "Neither"],
+    answer: "Both",
+  },
+  {
+    id: 2,
+    question: "What does CSS stand for in web development?",
+    options: [
+      "Cascading Style Sheet",
+      "Creative Style Sheet",
+      "Computer Style Sheet",
+      "Coded Style Sheet",
+    ],
+    answer: "Cascading Style Sheet",
+  },
+  {
+    id: 3,
+    question: "Which of the following is not a JavaScript framework?",
+    options: ["React", "Vue.js", "Angular", "Hibernate"],
+    answer: "Hibernate",
+  },
+  {
+    id: 4,
+    question:
+      "Which protocol is commonly used for communication between a web server and a client?",
+    options: ["HTTP", "FTP", "SSH", "SMTP"],
+    answer: "HTTP",
+  },
+  {
+    id: 5,
+    question:
+      "What is the purpose of RESTful API in full-stack development?",
+    options: [
+      "To handle server-side operations",
+      "To manage databases",
+      "To format web pages",
+      "To enhance security",
+    ],
+    answer: "To handle server-side operations",
+  },
+  {
+    id: 6,
+    question: "What does MVC stand for in the context of web development?",
+    options: [
+      "Model View Controller",
+      "Most Valuable Code",
+      "Master Visual Components",
+      "Multiple View Configuration",
+    ],
+    answer: "Model View Controller",
+  },
+  {
+    id: 7,
+    question: "Which of the following is not a version control system?",
+    options: ["Git", "Mercurial", "SVN", "HTTP"],
+    answer: "HTTP",
+  },
+  {
+    id: 8,
+    question: "What does API stand for in web development?",
+    options: [
+      "Application Programming Interface",
+      "Advanced Programming Interaction",
+      "Automated Process Integration",
+      "All Purpose Interface",
+    ],
+    answer: "Application Programming Interface",
+  },
+  {
+    id: 9,
+    question: "Which of the following is a server-side scripting language?",
+    options: ["HTML", "CSS", "JavaScript", "PHP"],
+    answer: "PHP",
+  },
+];
 const AddQuestions = () => {
   const location = useLocation();
   const { job } = location.state || { job: {} };
@@ -35,21 +121,21 @@ const AddQuestions = () => {
     answer: "",
   });
 
-  const [questions, setQuestions] = useState(null); // Initialize questions state with null
+  const [questions, setQuestions] = useState(sampleQuestions); // Initialize questions state with null
 
-  useEffect(() => {
-    // Fetch questions from the API when the component mounts
-    const fetchQuestions = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/test/get");
-        setQuestions(response.data);
-      } catch (error) {
-        console.error("Error fetching questions:", error);
-      }
-    };
+  // useEffect(() => {
+  //   // Fetch questions from the API when the component mounts
+  //   const fetchQuestions = async () => {
+  //     try {
+  //       const response = await axios.get("http://localhost:3000/test/get");
+  //       setQuestions(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching questions:", error);
+  //     }
+  //   };
 
-    fetchQuestions();
-  }, []);
+  //   fetchQuestions();
+  // }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;

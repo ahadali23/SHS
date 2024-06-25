@@ -25,6 +25,14 @@ import CDashContainer from "../components/Candidate/CDashContainer";
 import Home from "../components/Candidate/Home";
 
 const CandidateDashboard = () => {
+  const [open, setOpen] = useState(true);
+  const { loading, userInfo } = useUserInfo();
+
+  const toggleDrawer = () => {
+    setOpen(!open);
+  };
+
+  console.log(userInfo, "user");
   return (
     <Box sx={{ display: "flex" }}>
       <CDashContainer />

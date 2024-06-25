@@ -22,7 +22,7 @@ export const useUserInfo = () => {
             },
           }
         );
-
+        console.log(response, "res");
         setUserInfo({ info: response.data.userInfo, role: response.data.role });
       } catch (error) {
         console.error("Error fetching user info", error);

@@ -90,7 +90,7 @@ export const candidateListItems = (
       </ListItemIcon>
       <ListItemText primary="Saved Jobs" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton id="technicalTest" component={Link} to="/technical">
       <ListItemIcon>
         <Quiz sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>

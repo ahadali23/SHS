@@ -5,6 +5,7 @@ const CvSchema = new Schema({
   candidateId: {
     type: Schema.Types.ObjectId,
     ref: "Candidate",
+    required:false
   },
   fileName: String,
   file: {
