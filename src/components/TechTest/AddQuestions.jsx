@@ -76,6 +76,19 @@ const AddQuestions = () => {
         }
       );
       console.log(response.data);
+      // Optionally reset the form data after successful submission
+      setFormData({
+        testDate: "",
+        testWindowStart: "",
+        testWindowEnd: "",
+        testDuration: "",
+        testType: "",
+        numberOfQuestions: "",
+        customQuestion: "",
+        answer: "",
+      });
+      // Optionally fetch questions again to update the UI with new data
+      fetchQuestions();
     } catch (error) {
       console.error("Error:", error);
     }
@@ -93,7 +106,6 @@ const AddQuestions = () => {
                   <Typography variant="body1">{question.question}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  {/* <Typography variant="body1">Options:</Typography> */}
                   {question.options.map((option, optionIndex) => (
                     <Typography
                       key={optionIndex}
@@ -129,6 +141,7 @@ const AddQuestions = () => {
                     InputLabelProps={{ shrink: true }}
                     value={formData.testDate}
                     onChange={handleChange}
+                    required
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -140,6 +153,7 @@ const AddQuestions = () => {
                     InputLabelProps={{ shrink: true }}
                     value={formData.testWindowStart}
                     onChange={handleChange}
+                    required
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -151,6 +165,7 @@ const AddQuestions = () => {
                     InputLabelProps={{ shrink: true }}
                     value={formData.testWindowEnd}
                     onChange={handleChange}
+                    required
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -161,10 +176,11 @@ const AddQuestions = () => {
                     name="testDuration"
                     value={formData.testDuration}
                     onChange={handleChange}
+                    required
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth required>
                     <InputLabel>Test Type</InputLabel>
                     <Select
                       name="testType"
@@ -188,6 +204,7 @@ const AddQuestions = () => {
                     name="numberOfQuestions"
                     value={formData.numberOfQuestions}
                     onChange={handleChange}
+                    required
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -210,6 +227,7 @@ const AddQuestions = () => {
                     rows={2}
                     value={formData.answer}
                     onChange={handleChange}
+                    required
                   />
                 </Grid>
                 <Grid item xs={12}>

@@ -43,7 +43,7 @@ export const companyListItems = (
       </ListItemIcon>
       <ListItemText primary="Candidate Record" />
     </ListItemButton>
-    <ListItemButton id="testButton" component={Link} to="/test">
+    <ListItemButton id="testButton" component={Link} to="/test-setup">
       <ListItemIcon>
         <PsychologyAlt sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>
@@ -90,7 +90,7 @@ export const candidateListItems = (
       </ListItemIcon>
       <ListItemText primary="Saved Jobs" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton id="testButton" component={Link} to="/test">
       <ListItemIcon>
         <Quiz sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>

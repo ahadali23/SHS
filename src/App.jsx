@@ -1,9 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import CompanyDashboard from "./pages/CompanyDashboard";
+import Dashboard from "./pages/Dashboard";
 import "./App.css";
-import CandidateDashboard from "./pages/CandidateDashboard";
 import { useUserInfo } from "./hooks/useUserInfo";
 import Loading from "./components/Loading";
 import CvFile from "./pages/CvFile";
@@ -18,16 +17,15 @@ import CanRecDetails from "./pages/CanRecDetails";
 import ApplicantInfo from "./pages/ApplicantInfo";
 import QuestionSetup from "./pages/QuestionSetup";
 import Test from "./pages/Test";
+import TechTest from "./pages/TechTest";
 import Settings from "./pages/Settings";
+
+const RoleBasedDashboard = Dashboard(() => null);
 
 function App() {
   const { loading, userInfo } = useUserInfo();
   if (loading) {
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
+    return <Loading />;
   }
   return (
     <Router>
@@ -36,21 +34,13 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/signup" element={<Signup />} />
-        <Route
-          path="/dashboard"
-          element={
-            userInfo.role === "company" ? (
-              <CompanyDashboard />
-            ) : (
-              <CandidateDashboard />
-            )
-          }
-        />
+        <Route path="/dashboard" element={<RoleBasedDashboard />} />
         <Route path="/file" element={<CvFile />} />
         <Route path="/postjob" element={<JobPosting />} />
         <Route path="/jobs" element={<BrowseJobs />} />
         <Route path="/candidate-record" element={<CandidateRecords />} />
-        <Route path="/test" element={<Test />} />
+        <Route path="/test-setup" element={<Test />} />
+        <Route path="/test" element={<TechTest />} />
         <Route path="/record-details/:job_id" element={<CanRecDetails />} />
         <Route path="/application/:applicant_id" element={<ApplicantInfo />} />
         <Route path="/add-questions/:job_id" element={<QuestionSetup />} />

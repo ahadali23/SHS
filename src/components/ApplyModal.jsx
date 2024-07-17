@@ -46,13 +46,19 @@ const ApplyModal = ({ open, handleClose, jobId }) => {
     formDataObj.append("file", file);
     formDataObj.append("jobID", jobId);
     formDataObj.append("userID", userInfo.info.userId);
-
+    console.log(userInfo.info.userId);
     try {
+      const token = localStorage.getItem("SHS");
+      console.log(token)
+      if (!token) {
+        throw new Error("No token found");
+      }
       const response = await axios.post(
         "http://localhost:3000/apply/application",
         formDataObj,
         {
           headers: {
+            "x-auth-token": token,
             "Content-Type": "multipart/form-data",
           },
         }

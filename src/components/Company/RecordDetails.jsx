@@ -32,6 +32,7 @@ const Row = ({ row }) => {
 
   const handleListItemClick = (row) => {
     const detailUrl = `/application/${row._id}`;
+    console.log(row)
     navigate(detailUrl, { state: { row } });
   };
   return (
@@ -100,7 +101,7 @@ const Row = ({ row }) => {
                   <TableRow>
                     <TableCell align="center">{row.cvScore}</TableCell>
                     <TableCell align="center">{row.testScore}</TableCell>
-                    <TableCell align="center">{row.interviewScore}</TableCell>
+                    <TableCell align="center">{row.interviewScores.score}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>

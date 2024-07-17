@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 import {
   Box,
   Container,
@@ -21,10 +22,15 @@ import {
   Group,
 } from "@mui/icons-material";
 import ApplyModal from "../ApplyModal";
+import { useUserInfo } from "../../hooks/useUserInfo";
 
 const JobDetails = () => {
+  const { userInfo } = useUserInfo();
   const [open, setOpen] = useState(false);
+  const [btnText, setBtnText] = useState("Apply Now");
   const [timeAgo, setTimeAgo] = useState("");
+  const [loading, setLoading] = useState(true); // Loading state
+  const [applied, setApplied] = useState(false); // Track if user has applied
 
   const location = useLocation();
   const { job } = location.state || {};
@@ -37,12 +43,9 @@ const JobDetails = () => {
     setOpen(false);
   };
 
-  if (!job) {
-    return <Typography>Loading...</Typography>;
-  }
   useEffect(() => {
-    if (job && job.postDate) {
-      const postDate = new Date(job.postDate);
+    if (job && job.postedDate) {
+      const postDate = new Date(job.postedDate);
       const currentTime = new Date();
       const timeDifference = Math.floor((currentTime - postDate) / (1000 * 60)); // in minutes
 
@@ -52,13 +55,46 @@ const JobDetails = () => {
         setTimeAgo(`${timeDifference} min ago`);
       } else if (timeDifference < 1440) {
         const hours = Math.floor(timeDifference / 60);
-        setTimeAgo(`${hours} hour${hours > 1 ? "s" : ""} ago`);
+        setTimeAgo(`${hours} hour${hours !== 1 ? "s" : ""} ago`);
       } else {
         const days = Math.floor(timeDifference / 1440);
-        setTimeAgo(`${days} day${days > 1 ? "s" : ""} ago`);
+        setTimeAgo(`${days} day${days !== 1 ? "s" : ""} ago`);
       }
     }
   }, [job]);
+
+  useEffect(() => {
+    const fetchAppliedStatus = async () => {
+      const id = userInfo.info.userId;
+      console.log(id)
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/apply/find/${userInfo.info.userId}`
+        );
+        const applicantApplied = response.data;
+        if (applicantApplied.length > 0) {
+          setBtnText("Applied");
+          setApplied(true); // Set applied state to true if user has applied
+        }
+      } catch (error) {
+        console.error("Error fetching applicants for job:", error);
+      } finally {
+        setLoading(false); // Update loading state after fetch
+      }
+    };
+
+    fetchAppliedStatus();
+  }, [userInfo.info.userId]);
+
+  const handleApply = () => {
+    if (!applied) {
+      handleOpen(); // Open apply modal if user hasn't applied
+    }
+  };
+
+  if (!job || loading) {
+    return <Typography>Loading...</Typography>;
+  }
 
   return (
     <Container>
@@ -81,7 +117,7 @@ const JobDetails = () => {
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Group sx={{ color: "#018a82", mr: 1 }} />
               <Typography variant="body1" sx={{ mr: 2 }}>
-                2 Vacancy
+                {job.vacancy} Vacancy
               </Typography>
             </Box>
             <Divider sx={{ mb: 2 }} />
@@ -117,7 +153,7 @@ const JobDetails = () => {
               Job Description
             </Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              {job.jobDescription}
+              {job.description}
             </Typography>
             <Box sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 1 }}>
               {job.skills.map((skill, index) => (
@@ -164,19 +200,23 @@ const JobDetails = () => {
                 {
                   icon: <LocationOn />,
                   label: "Location",
-                  value: job.location.city + ", " + job.location.country,
+                  value: `${job.location.city}, ${job.location.country}`,
                 },
                 {
                   icon: <AttachMoney />,
                   label: "Offered Salary",
-                  value: job.salary,
+                  value: `${job.salaryFrom} - ${job.salaryTo}`,
                 },
                 {
                   icon: <School />,
                   label: "Qualification",
-                  value: job.education,
+                  value: job.educationLevel,
                 },
-                { icon: <Business />, label: "Industry", value: "Private" },
+                {
+                  icon: <Business />,
+                  label: "Industry",
+                  value: job.jobCategory,
+                },
                 {
                   icon: <Schedule />,
                   label: "Date Posted",
@@ -205,29 +245,32 @@ const JobDetails = () => {
                     <Typography sx={{ fontWeight: "bold" }}>
                       {item.label}
                     </Typography>
-                    <Typography sx={{ ml: 0 }}>{item.value}</Typography>
+                    <Typography>{item.value}</Typography>
                   </Box>
                 </Box>
               ))}
             </Box>
             <Button
-              type="submit"
+              type="button"
               fullWidth
               variant="contained"
               size="medium"
               sx={{
                 mt: 2,
-                backgroundColor: "#018a82",
+                backgroundColor: applied ? "#52c9c1" : "#018a82",
                 "&:hover": {
-                  backgroundColor: "#52c9c1",
+                  backgroundColor: applied ? "#52c9c1" : "#52c9c1",
                 },
                 textTransform: "none",
                 fontSize: 16,
                 fontWeight: "bold",
+                cursor: applied ? "not-allowed" : "pointer",
+                pointerEvents: applied ? "none" : "auto",
               }}
-              onClick={handleOpen}
+              onClick={handleApply}
+              disabled={applied}
             >
-              Apply Now
+              {btnText}
             </Button>
             <Button
               fullWidth

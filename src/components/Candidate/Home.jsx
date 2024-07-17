@@ -19,8 +19,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Email, LinkedIn, GitHub, Twitter } from "@mui/icons-material";
+import { useUserInfo } from "../../hooks/useUserInfo";
 
-// Sample data for the chart
 const data = [
   {
     name: "Week 01",
@@ -74,6 +74,7 @@ const data = [
 ];
 
 const Dashboard = () => {
+  const { userInfo } = useUserInfo();
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
@@ -95,12 +96,12 @@ const Dashboard = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Profile />
+          <Profile userInfo={userInfo} />
         </Grid>
         <Grid item xs={12} md={8}>
           <VacancyStats />
         </Grid>
-        <Grid item xs={8} md={5}>
+        <Grid item xs={12} md={5}>
           <RecentActivities />
         </Grid>
         <Grid item xs={12} md={7}>
@@ -175,7 +176,7 @@ const VacancyStats = () => (
   </Paper>
 );
 
-const Profile = () => (
+const Profile = ({ userInfo }) => (
   <Paper
     sx={{
       p: 3,
@@ -187,16 +188,18 @@ const Profile = () => (
     }}
   >
     <Avatar
-      alt="Oda Dink"
-      src="profile.jpg"
+      src={userInfo.info.picture}
+      alt={`${userInfo.info.firstName} ${userInfo.info.lastName}`}
       sx={{ width: 100, height: 100, mb: 2 }}
     />
-    <Typography variant="h6">Oda Dink</Typography>
+    <Typography variant="h6">
+      {userInfo.info.firstName} {userInfo.info.lastName}
+    </Typography>
     <Typography variant="body2" color="textSecondary">
       Programmer
     </Typography>
     <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-      oda.dink@example.com
+      {userInfo.info.email}
     </Typography>
     <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
       <Button variant="outlined" color="primary" size="small">
@@ -218,7 +221,7 @@ const Profile = () => (
       <IconButton
         aria-label="email"
         color="primary"
-        href="mailto:oda.dink@example.com"
+        href={`mailto:${userInfo.info.email}`}
       >
         <Email />
       </IconButton>

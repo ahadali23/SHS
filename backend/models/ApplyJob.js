@@ -8,7 +8,12 @@ const ApplySchema = new Schema({
   file: String,
   cvScore: String,
   testScore: String,
-  interviewScore: String,
+  interviewScores: {
+    score: { type: Number },
+    emotionAnalysis: { type: Object },
+    gestureAnalysis: { type: Number },
+    audioAnalysis: { type: Number },
+  },
   jobID: String,
   userID: String,
   date: { type: Date, default: Date.now },

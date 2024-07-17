@@ -34,6 +34,7 @@ const JobPost = () => {
           const response = await axios.get(
             `http://localhost:3000/job/get/${userInfo.info.companyName}`
           );
+          console.log(response.data);
           setJobPosts(response.data);
         } catch (error) {
           console.error("There was an error fetching the job posts!", error);
@@ -97,11 +98,11 @@ const JobPost = () => {
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Job Title</TableCell>
-                        <TableCell align="right">Posting Date</TableCell>
-                        <TableCell align="right">Deadline</TableCell>
-                        <TableCell align="right">Submissions</TableCell>
-                        <TableCell align="right">Actions</TableCell>
+                        <TableCell align="center">Job Title</TableCell>
+                        <TableCell align="center">Posting Date</TableCell>
+                        <TableCell align="center">Deadline</TableCell>
+                        <TableCell align="center">Submissions</TableCell>
+                        <TableCell align="center">Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -112,17 +113,19 @@ const JobPost = () => {
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
                         >
-                          <TableCell component="th" scope="row">
+                          <TableCell component="th" scope="row" align="center">
                             {row.jobTitle}
                           </TableCell>
-                          <TableCell align="right">
-                            {new Date(row.postDate).toLocaleDateString()}
+                          <TableCell align="center">
+                            {new Date(row.postedDate).toLocaleDateString()}
                           </TableCell>
-                          <TableCell align="right">
-                            {new Date(row.deadline).toLocaleDateString()}
+                          <TableCell align="center">
+                            {new Date(row.lastDateToApply).toLocaleDateString()}
                           </TableCell>
-                          <TableCell align="right">{row.submissions}</TableCell>
-                          <TableCell align="right">
+                          <TableCell align="center">
+                            {row.applicantCount}
+                          </TableCell>
+                          <TableCell align="center">
                             <IconButton aria-label="edit">
                               <Edit />
                             </IconButton>

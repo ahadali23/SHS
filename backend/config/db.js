@@ -5,6 +5,7 @@ const mongoURI =
   "mongodb+srv://smarthiringsystem7:uL72aorgdO9kijkc@shsclus1.9mpdqua.mongodb.net/?retryWrites=true&w=majority&appName=shsClus1";
 
 const connect = mongoose.connect(mongoURI);
+// const connect = mongoose.connect(process.env.MONGODB_URL);
 
 connect
   .then(() => {

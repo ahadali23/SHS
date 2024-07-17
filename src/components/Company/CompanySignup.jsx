@@ -4,12 +4,12 @@ import {
   Box,
   Paper,
   TextField,
-  Button,
   Typography,
   IconButton,
   Grid,
   InputAdornment,
   Avatar,
+  Slide,
 } from "@mui/material";
 import {
   Email,
@@ -20,6 +20,8 @@ import {
   Business,
   Place,
 } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
+import CustomSnackbar from "../CustomSnackbar";
 import axios from "axios";
 
 const CompanySignup = ({ onClose }) => {
@@ -33,17 +35,26 @@ const CompanySignup = ({ onClose }) => {
     city: "",
     country: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
 
   const handleSignup = async (event) => {
     event.preventDefault();
+    setLoading(true);
+    setMessage(null);
     console.log(formData);
     try {
       const response = await axios.post(
         "http://localhost:3000/auth/companysignup",
         { ...formData, role: "company" }
       );
+      setMessage({
+        type: "success",
+        text: "Login Successfully! Welcome",
+      });
       console.log(response.data);
       localStorage.setItem("SHS", response.data.token);
+      setLoading(false);
       navigate("/dashboard");
     } catch (error) {
       console.error("Signup failed:", error.response.data);
@@ -53,6 +64,10 @@ const CompanySignup = ({ onClose }) => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleClose = () => {
+    setMessage(null);
   };
   return (
     <Box
@@ -89,6 +104,16 @@ const CompanySignup = ({ onClose }) => {
             noValidate
             sx={{ mt: 3 }}
           >
+            {message && (
+              <CustomSnackbar
+                open={true}
+                autoHideDuration={2000}
+                onClose={handleClose}
+                transistion={Slide}
+                severity={message.type}
+                message={message.text}
+              />
+            )}
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -238,7 +263,7 @@ const CompanySignup = ({ onClose }) => {
                 />
               </Grid>
             </Grid>
-            <Button
+            <LoadingButton
               type="submit"
               fullWidth
               variant="contained"
@@ -254,9 +279,11 @@ const CompanySignup = ({ onClose }) => {
                 fontSize: 18,
                 fontWeight: "bold",
               }}
+              loading={loading}
+              disabled={loading} // Disable button when loading
             >
               Sign Up
-            </Button>
+            </LoadingButton>
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link

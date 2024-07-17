@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Button, Box, Typography, Container, Paper, Grid } from "@mui/material";
+import { Button, Box, Typography, Container, Paper } from "@mui/material";
 import Webcam from "react-webcam";
 import RecordRTC from "recordrtc";
+import axios from "axios";
 
 const questions = [
   "What is your name?",
@@ -30,7 +31,7 @@ function Interview({ stream }) {
 
   const startRecording = () => {
     const options = {
-      mimeType: "video/webm",
+      mimeType: "video/mp4",
     };
     recordRTC.current = RecordRTC(stream, options);
     recordRTC.current.startRecording();
@@ -40,26 +41,34 @@ function Interview({ stream }) {
     if (recordRTC.current) {
       recordRTC.current.stopRecording(() => {
         const blob = recordRTC.current.getBlob();
-        saveRecording(blob);
+        const mp4Blob = new Blob([blob], { type: "video/mp4" });
+        saveRecording(mp4Blob);
+        // saveRecording(blob);
       });
     }
   };
 
   const saveRecording = (blob) => {
     const formData = new FormData();
-    formData.append("video", blob, "interview.webm");
+    formData.append("video", blob, "interview.mp4");
 
-    fetch("http://localhost:3000/upload-video", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Video uploaded successfully", data);
+    const token = localStorage.getItem("SHS");
+    console.log("Retrieved Token: ", token);
+
+    axios
+      .post("http://localhost:3000/interview/upload-video", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "x-auth-token": token, // Include the token in the headers
+        },
+      })
+      .then((response) => {
+        console.log("Video uploaded successfully", response.data);
         alert("Interview completed and video uploaded for analysis.");
       })
       .catch((error) => {
         console.error("Error uploading video:", error);
+        alert("Error uploading video. Please try again.");
       });
   };
 

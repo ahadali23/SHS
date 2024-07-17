@@ -2,33 +2,33 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const JobPostingSchema = new Schema({
-  jobTitle: {
-    type: String,
-    required: true,
-  },
-  jobDescription: {
-    type: String,
-    required: true,
-  },
-  location: {
-    city: String,
-    country: String,
-  },
-  jobType: String,
-  salary: String,
-  skills: [String],
-  experience: String,
-  education: String,
   companyName: {
     type: String,
     required: true,
   },
+  jobTitle: {
+    type: String,
+    required: true,
+  },
   position: String,
-  postDate: {
+  jobCategory: String,
+  jobType: String,
+  vacancy: Number,
+  experience: String,
+  skills: [String],
+  postedDate: {
     type: Date,
     default: Date.now,
   },
-  deadline: Date,
+  lastDateToApply: Date,
+  closeDate: Date,
+  gender: String,
+  salaryFrom: Number,
+  salaryTo: Number,
+  location: { city: String, state: String, country: String },
+  educationLevel: String,
+  description: String,
+  status: String,
 });
 
 const JobPost = mongoose.model("JobsPosted", JobPostingSchema);

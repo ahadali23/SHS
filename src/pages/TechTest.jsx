@@ -1,15 +1,12 @@
 import React from "react";
-import ProfileSetting from "../components/ProfileSetting";
 import { Box, Toolbar } from "@mui/material";
-import ComDashContainer from "../components/Company/ComDashContainer";
 import CDashContainer from "../components/Candidate/CDashContainer";
-import { useUserInfo } from "../hooks/useUserInfo";
+import TestScreen from "../components/TechTest/TestScreen";
 
-const Setting = () => {
-  const { userInfo } = useUserInfo();
+const TechTest = () => {
   return (
     <Box sx={{ display: "flex" }}>
-      {userInfo.role === "company" ? <ComDashContainer /> : <CDashContainer />}
+      <CDashContainer />
       <Box
         component="main"
         sx={{
@@ -23,10 +20,10 @@ const Setting = () => {
       >
         <Toolbar />
         {/* here */}
-        <ProfileSetting />
+        <TestScreen />
       </Box>
     </Box>
   );
 };
 
-export default Setting;
+export default TechTest;

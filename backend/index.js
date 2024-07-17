@@ -1,13 +1,11 @@
 require('dotenv').config();
 const express = require("express");
 const connect = require("./config/db");
-const { conn, gfs } = require("./config/db");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { spawn } = require("child_process");
 const multer = require("multer");
 const fs = require("fs");
-const upload = require("./storage"); // Ensure this line is included
+const upload = require("./storage");
 
 const app = express();
 const port = 3000;
@@ -23,6 +21,7 @@ app.use("/files", require("./routes/file"));
 app.use("/job", require("./routes/job"));
 app.use("/test", require("./routes/test"));
 app.use("/apply", require("./routes/apply"));
+app.use("/interview", require("./routes/interview"));
 
 app.listen(port, () => {
   console.log(`SHS Backend Running on port ${port}`);

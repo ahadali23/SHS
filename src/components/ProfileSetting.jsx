@@ -12,7 +12,9 @@ import {
   Tabs,
   Typography,
   Button,
+  Divider,
 } from "@mui/material";
+import { MuiFileInput } from "mui-file-input";
 import {
   Email,
   Phone,
@@ -21,179 +23,10 @@ import {
   Twitter,
   LinkedIn,
   WhatsApp,
+  AttachFile,
+  Close,
 } from "@mui/icons-material";
 import axios from "axios";
-
-const ProfileOverview = ({ userInfo }) => {
-  return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        About
-      </Typography>
-      <Typography variant="body1" paragraph>
-        Developer with over 5 years' experience working in both the public and
-        private sectors. Diplomatic, personable, and adept at managing sensitive
-        situations. Highly organized, self-motivated, and proficient with
-        computers. Looking to boost students’ satisfactions scores for
-        International University. Bachelor’s degree in communications.
-      </Typography>
-      <Typography variant="body1" paragraph>
-        It describes the candidate's relevant experience, skills, and
-        achievements. The purpose of this career summary is to explain your
-        qualifications for the job in 3-5 sentences and convince the manager to
-        read the whole resume document.
-      </Typography>
-      <Typography variant="h5" gutterBottom>
-        Education
-      </Typography>
-      <List>
-        <ListItem>
-          <ListItemIcon>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              B
-            </Typography>
-          </ListItemIcon>
-          <ListItemText
-            primary="BCA - Bachelor of Computer Applications"
-            secondary={
-              <>
-                <Typography variant="body2" color="textSecondary">
-                  International University - (2004 - 2010)
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  There are many variations of passages of available, but the
-                  majority alteration in some form. As a highly skilled and
-                  successful product development and design specialist with more
-                  than 4 Years of My experience.
-                </Typography>
-              </>
-            }
-          />
-        </ListItem>
-        <ListItem>
-          <ListItemIcon>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              M
-            </Typography>
-          </ListItemIcon>
-          <ListItemText
-            primary="MCA - Master of Computer Application"
-            secondary={
-              <>
-                <Typography variant="body2" color="textSecondary">
-                  International University - (2010 - 2012)
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  There are many variations of passages of available, but the
-                  majority alteration in some form. As a highly skilled and
-                  successful product development and design specialist with more
-                  than 4 Years of My experience.
-                </Typography>
-              </>
-            }
-          />
-        </ListItem>
-        <ListItem>
-          <ListItemIcon>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              D
-            </Typography>
-          </ListItemIcon>
-          <ListItemText
-            primary="Design Communication Visual"
-            secondary={
-              <>
-                <Typography variant="body2" color="textSecondary">
-                  International University - (2012 - 2015)
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  There are many variations of passages of available, but the
-                  majority alteration in some form. As a highly skilled and
-                  successful product development and design specialist with more
-                  than 4 Years of My experience.
-                </Typography>
-              </>
-            }
-          />
-        </ListItem>
-      </List>
-      <Typography variant="h5" gutterBottom>
-        Experiences
-      </Typography>
-      <List>
-        <ListItem>
-          <ListItemIcon>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              W
-            </Typography>
-          </ListItemIcon>
-          <ListItemText
-            primary="Web Design & Development Team Leader"
-            secondary={
-              <>
-                <Typography variant="body2" color="textSecondary">
-                  International University - (2012 - 2015)
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  There are many variations of passages of available, but the
-                  majority alteration in some form. As a highly skilled and
-                  successful product development and design specialist with more
-                  than 4 Years of My experience.
-                </Typography>
-              </>
-            }
-          />
-        </ListItem>
-        <ListItem>
-          <ListItemIcon>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              S
-            </Typography>
-          </ListItemIcon>
-          <ListItemText
-            primary="Senior Software Engineer"
-            secondary={
-              <>
-                <Typography variant="body2" color="textSecondary">
-                  International University - (2015 - 2018)
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  There are many variations of passages of available, but the
-                  majority alteration in some form. As a highly skilled and
-                  successful product development and design specialist with more
-                  than 4 Years of My experience.
-                </Typography>
-              </>
-            }
-          />
-        </ListItem>
-        <ListItem>
-          <ListItemIcon>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              P
-            </Typography>
-          </ListItemIcon>
-          <ListItemText
-            primary="Project Manager"
-            secondary={
-              <>
-                <Typography variant="body2" color="textSecondary">
-                  International University - (2018 - Present)
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  There are many variations of passages of available, but the
-                  majority alteration in some form. As a highly skilled and
-                  successful product development and design specialist with more
-                  than 4 Years of My experience.
-                </Typography>
-              </>
-            }
-          />
-        </ListItem>
-      </List>
-    </Box>
-  );
-};
 
 const ProfileSettingsForm = ({ userInfo, onSave }) => {
   const [formValues, setFormValues] = useState({
@@ -206,9 +39,7 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
     address: userInfo.address || "",
   });
   const [profilePic, setProfilePic] = useState(null);
-  const [profilePicPreview, setProfilePicPreview] = useState(
-    userInfo.picture || avatar1
-  );
+  const [profilePicPreview, setProfilePicPreview] = useState(userInfo.picture);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -335,9 +166,9 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
 };
 
 const ProfileSetting = () => {
-  const [tabIndex, setTabIndex] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [file, setFile] = useState(null);
 
   const fetchUserInfo = async () => {
     try {
@@ -350,10 +181,10 @@ const ProfileSetting = () => {
           "x-auth-token": token,
         },
       });
-      const userInfo = response.data.userInfo;
+      const fetchedUserInfo = response.data.userInfo;
       setUserInfo({
-        ...userInfo,
-        picture: userInfo.picture || avatar1,
+        ...fetchedUserInfo,
+        picture: fetchedUserInfo.picture,
       });
       setLoading(false);
     } catch (error) {
@@ -365,13 +196,12 @@ const ProfileSetting = () => {
     fetchUserInfo();
   }, []);
 
-  const handleTabChange = (event, newValue) => {
-    setTabIndex(newValue);
+  const handleProfileUpdate = () => {
+    fetchUserInfo();
   };
 
-  const handleProfileUpdate = () => {
-    // Logic to handle profile update, e.g., refetch user info
-    fetchUserInfo();
+  const handleFileChange = async (newFile) => {
+    setFile(newFile);
   };
 
   if (loading) {
@@ -428,24 +258,33 @@ const ProfileSetting = () => {
             </ListItem>
           </List>
         </Box>
+        <Divider />
+        <Box sx={{ mt: 3 }}>
+          <Typography variant="h6">Attachments</Typography>
+          <MuiFileInput
+            value={file}
+            onChange={handleFileChange}
+            placeholder="Select CV/Resume"
+            InputProps={{
+              inputProps: {
+                accept: ".pdf",
+              },
+              startAdornment: <AttachFile />,
+            }}
+            clearIconButtonProps={{
+              title: "Remove",
+              children: <Close fontSize="small" />,
+            }}
+            sx={{ mt: 1 }}
+          />
+        </Box>
+        <Divider />
+        <Box sx={{ mt: 3 }}>
+          <Typography variant="h6">Skills</Typography>
+        </Box>
       </Paper>
       <Paper sx={{ flex: 1, p: 3 }}>
-        <Tabs
-          value={tabIndex}
-          onChange={handleTabChange}
-          indicatorColor="primary"
-          textColor="primary"
-        >
-          <Tab label="Overview" />
-          <Tab label="Settings" />
-        </Tabs>
-        {tabIndex === 0 && <ProfileOverview userInfo={userInfo} />}
-        {tabIndex === 1 && (
-          <ProfileSettingsForm
-            userInfo={userInfo}
-            onSave={handleProfileUpdate}
-          />
-        )}
+        <ProfileSettingsForm userInfo={userInfo} onSave={handleProfileUpdate} />
       </Paper>
     </Box>
   );

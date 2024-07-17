@@ -19,7 +19,7 @@ def extract_text_from_pdf(pdf_path):
                 text += page.extract_text()
         return text
     except Exception as e:
-        print(f"Error extracting text from PDF: {e}")
+        print(f"Error extracting text from PDF: {e}", file=sys.stderr)
         return ""
 
 # Function to get BERT embeddings
@@ -29,10 +29,14 @@ def get_embeddings(text):
         outputs = model(**inputs)
         return outputs.last_hidden_state.mean(dim=1).detach().numpy()
     except Exception as e:
-        print(f"Error getting embeddings: {e}")
+        print(f"Error getting embeddings: {e}", file=sys.stderr)
         return np.array([])
 
 # Extract command line arguments
+if len(sys.argv) < 3:
+    print("Usage: cvAnalysis.py <cv_path> <job_description>", file=sys.stderr)
+    sys.exit(1)
+
 pdf_path = sys.argv[1]
 job_description = sys.argv[2]
 

@@ -5,13 +5,9 @@ import {
   List,
   Divider,
   Typography,
+  Avatar,
 } from "@mui/material";
-import {
-  ChevronLeft,
-  Menu,
-  Notifications,
-  Person,
-} from "@mui/icons-material";
+import { ChevronLeft, Menu, Notifications } from "@mui/icons-material";
 import SHSBar from "../SHSBar";
 import SHSDrawer from "../SHSDrawer";
 import { companyListItems, secondaryListItems } from "../ListItems";
@@ -80,18 +76,16 @@ const ComDashContainer = () => {
               "Loading..."
             ) : (
               <>
-                {userInfo && userInfo.info.companyName}{" "}
-                <IconButton
-                  sx={{
-                    borderRadius: "50%",
-                    backgroundColor: "white",
-                    color: "#018a82",
-                    fontSize: "1rem",
-                    ml: "5px",
-                  }}
-                >
-                  <Person />
-                </IconButton>
+                {userInfo && (
+                  <>
+                    {userInfo.info.companyName}
+                    <Avatar
+                      sx={{ ml: 2 }}
+                      src={userInfo.info.picture || "path_to_default_avatar"}
+                      alt={`${userInfo.info.companyName}`}
+                    />
+                  </>
+                )}
               </>
             )}
           </Typography>
