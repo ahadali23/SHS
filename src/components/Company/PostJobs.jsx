@@ -24,6 +24,7 @@ const JobPost = () => {
   const [jobPosts, setJobPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [createNew, setCreateNew] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
 
   const { userInfo } = useUserInfo();
 
@@ -46,6 +47,11 @@ const JobPost = () => {
 
     fetchJobPosts();
   }, [userInfo]);
+
+  const handleEdit = (job) => {
+    setSelectedJob(job);
+    setCreateNew(true);
+  };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 2, mb: 2 }}>
@@ -75,7 +81,7 @@ const JobPost = () => {
                 <CircularProgress />
               </Box>
             ) : createNew || jobPosts.length === 0 ? (
-              <JobForm />
+              <JobForm job={selectedJob} />
             ) : (
               <>
                 <Box
@@ -89,7 +95,10 @@ const JobPost = () => {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => setCreateNew(true)}
+                    onClick={() => {
+                      setSelectedJob(null);
+                      setCreateNew(true);
+                    }}
                   >
                     Create New
                   </Button>
@@ -126,7 +135,7 @@ const JobPost = () => {
                             {row.applicantCount}
                           </TableCell>
                           <TableCell align="center">
-                            <IconButton aria-label="edit">
+                            <IconButton aria-label="edit" onClick={() => handleEdit(row)}>
                               <Edit />
                             </IconButton>
                             <IconButton aria-label="delete">

@@ -20,46 +20,77 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { skillOptions } from "../SkillsList";
+import { industries } from "../IndustryList";
 import { useUserInfo } from "../../hooks/useUserInfo";
 import { useNavigate } from "react-router-dom";
+import CustomSnackbar from "../CustomSnackbar";
 
-const JobPost = () => {
+const JobPost = ({ job }) => {
   const { userInfo } = useUserInfo();
   const navigate = useNavigate();
-  const [jobTitle, setJobTitle] = useState();
-  const [position, setPosition] = useState("");
-  const [jobCategory, setJobCategory] = useState("");
-  const [jobType, setJobType] = useState("");
-  const [vacancy, setVacancy] = useState("");
-  const [experience, setExperience] = useState("");
-  const [skills, setSkills] = useState([]);
-  const [postedDate, setPostedDate] = useState("");
-  const [lastDateToApply, setLastDateToApply] = useState("");
-  const [closeDate, setCloseDate] = useState("");
-  const [gender, setGender] = useState("");
-  const [salaryFrom, setSalaryFrom] = useState("");
-  const [salaryTo, setSalaryTo] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [country, setCountry] = useState("");
-  const [educationLevel, setEducationLevel] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("Active");
+  const [jobTitle, setJobTitle] = useState(job?.jobTitle || "");
+  const [position, setPosition] = useState(job?.position || "");
+  const [jobIndustry, setJobIndustry] = useState(job?.jobIndustry || "");
+  const [jobType, setJobType] = useState(job?.jobType || "");
+  const [vacancy, setVacancy] = useState(job?.vacancy || "");
+  const [experience, setExperience] = useState(job?.experience || "");
+  const [skills, setSkills] = useState(job?.skills || []);
+  const [postedDate, setPostedDate] = useState(job?.postedDate || "");
+  const [lastDateToApply, setLastDateToApply] = useState(
+    job?.lastDateToApply || ""
+  );
+  const [closeDate, setCloseDate] = useState(job?.closeDate || "");
+  const [gender, setGender] = useState(job?.gender || "");
+  const [salaryFrom, setSalaryFrom] = useState(job?.salaryFrom || "");
+  const [salaryTo, setSalaryTo] = useState(job?.salaryTo || "");
+  const [city, setCity] = useState(job?.location.city || "");
+  const [state, setState] = useState(job?.location.state || "");
+  const [country, setCountry] = useState(job?.location.country || "");
+  const [educationLevel, setEducationLevel] = useState(
+    job?.educationLevel || ""
+  );
+  const [description, setDescription] = useState(job?.description || "");
+  const [status, setStatus] = useState(job?.status || "Active");
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    setPostedDate(today);
-    console.log(userInfo.info.companyName);
-  }, []);
+    if ((job && job.postedDate) || job.lastDateToApply) {
+      try {
+        const postDate = new Date(job.postedDate);
+        const last = new Date(job.lastDateToApply);
+        const formatPostDate = postDate.toISOString().slice(0, 10);
+        const formatLastDate = last.toISOString().slice(0, 10);
+        setPostedDate(formatPostDate);
+        setLastDateToApply(formatLastDate);
+      } catch (error) {
+        console.error("Error parsing postedDate:", error);
+        setPostedDate(new Date().toISOString().slice(0, 10));
+      }
+    } else {
+      const today = new Date().toISOString().slice(0, 10);
+      setPostedDate(today);
+    }
+  }, [job]);
+  useEffect(() => {
+    if (lastDateToApply) {
+      const nextDay = new Date(
+        new Date(lastDateToApply).getTime() + 24 * 60 * 60 * 1000
+      )
+        .toISOString()
+        .slice(0, 10);
+      setCloseDate(nextDay);
+    }
+  }, [lastDateToApply]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage(null);
     try {
       const response = await axios.post("http://localhost:3000/job/post", {
         companyName: userInfo.info.companyName,
         jobTitle,
         position,
-        jobCategory,
+        jobIndustry,
         jobType,
         vacancy,
         experience,
@@ -77,10 +108,22 @@ const JobPost = () => {
         description,
         status,
       });
+      setMessage({
+        type: "success",
+        text: "Job Added Successfully",
+      });
       console.log(response.data);
     } catch (error) {
+      setMessage({
+        type: "error",
+        text: "An error occurred. Please try again.",
+      });
       console.error("Job post failed:", error.response.data);
     }
+  };
+
+  const handleClose = () => {
+    setMessage(null);
   };
 
   return (
@@ -106,10 +149,26 @@ const JobPost = () => {
             }}
           >
             <Container maxWidth="md">
-              <Typography variant="h4" align="center" gutterBottom>
+              <Typography
+                component="h1"
+                variant="h4"
+                color={"#018a82"}
+                align="center"
+                gutterBottom
+              >
                 Post a Job
               </Typography>
               <form onSubmit={handleSubmit}>
+                {message && (
+                  <CustomSnackbar
+                    open={true}
+                    autoHideDuration={2000}
+                    onClose={handleClose}
+                    transistion={Slide}
+                    severity={message.type}
+                    message={message.text}
+                  />
+                )}
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
                     <TextField
@@ -118,7 +177,10 @@ const JobPost = () => {
                       variant="outlined"
                       margin="normal"
                       value={jobTitle}
+                      autoFocus
                       onChange={(e) => setJobTitle(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -129,23 +191,42 @@ const JobPost = () => {
                       margin="normal"
                       value={position}
                       onChange={(e) => setPosition(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
-                    <FormControl fullWidth variant="outlined" margin="normal">
-                      <InputLabel>Job Category</InputLabel>
+                    <FormControl
+                      fullWidth
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      className="custom-focused-border"
+                    >
+                      <InputLabel>Industry</InputLabel>
                       <Select
-                        value={jobCategory}
-                        onChange={(e) => setJobCategory(e.target.value)}
-                        label="Job Category"
+                        value={jobIndustry}
+                        onChange={(e) => setJobIndustry(e.target.value)}
+                        label="Job Industry"
+                        required
+                        className="custom-focused-border"
                       >
-                        <MenuItem value="Category1">Category 1</MenuItem>
-                        <MenuItem value="Category2">Category 2</MenuItem>
+                        {industries.map((industry) => (
+                          <MenuItem key={industry} value={industry}>
+                            {industry}
+                          </MenuItem>
+                        ))}
                       </Select>
                     </FormControl>
                   </Grid>
                   <Grid item xs={6}>
-                    <FormControl fullWidth variant="outlined" margin="normal">
+                    <FormControl
+                      fullWidth
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      className="custom-focused-border"
+                    >
                       <InputLabel>Job Type</InputLabel>
                       <Select
                         value={jobType}
@@ -167,16 +248,26 @@ const JobPost = () => {
                       margin="normal"
                       value={vacancy}
                       onChange={(e) => setVacancy(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
-                    <FormControl fullWidth variant="outlined" margin="normal">
+                    <FormControl
+                      fullWidth
+                      className="custom-focused-border"
+                      variant="outlined"
+                      margin="normal"
+                      required
+                    >
                       <InputLabel>Select Experience</InputLabel>
                       <Select
                         value={experience}
                         onChange={(e) => setExperience(e.target.value)}
                         label="Select Experience"
                       >
+                        <MenuItem value="Fresh">Fresh</MenuItem>
+                        <MenuItem value="<1 yr">&lt;1 yr</MenuItem>
                         <MenuItem value="1 yr">1 yr</MenuItem>
                         <MenuItem value="2 yrs">2 yrs</MenuItem>
                         <MenuItem value="3 yrs">3 yrs</MenuItem>
@@ -195,12 +286,19 @@ const JobPost = () => {
                       onChange={(event, newValue) => {
                         setSkills(newValue);
                       }}
+                      className="custom-focused-border"
                       renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
                           <Chip
+                            key={option}
                             variant="outlined"
                             label={option}
                             {...getTagProps({ index })}
+                            sx={{
+                              backgroundColor: "#018a82",
+                              color: "white",
+                              fontWeight: "bold",
+                            }}
                           />
                         ))
                       }
@@ -224,6 +322,8 @@ const JobPost = () => {
                       InputLabelProps={{ shrink: true }}
                       value={postedDate}
                       onChange={(e) => setPostedDate(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -236,6 +336,8 @@ const JobPost = () => {
                       InputLabelProps={{ shrink: true }}
                       value={lastDateToApply}
                       onChange={(e) => setLastDateToApply(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -248,6 +350,8 @@ const JobPost = () => {
                       InputLabelProps={{ shrink: true }}
                       value={closeDate}
                       onChange={(e) => setCloseDate(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -257,6 +361,8 @@ const JobPost = () => {
                         value={gender}
                         onChange={(e) => setGender(e.target.value)}
                         label="Select Gender"
+                        required
+                        className="custom-focused-border"
                       >
                         <MenuItem value="Any">Any</MenuItem>
                         <MenuItem value="Male">Male</MenuItem>
@@ -273,6 +379,8 @@ const JobPost = () => {
                       margin="normal"
                       value={salaryFrom}
                       onChange={(e) => setSalaryFrom(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -283,6 +391,8 @@ const JobPost = () => {
                       margin="normal"
                       value={salaryTo}
                       onChange={(e) => setSalaryTo(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -293,6 +403,8 @@ const JobPost = () => {
                       margin="normal"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -303,6 +415,8 @@ const JobPost = () => {
                       margin="normal"
                       value={state}
                       onChange={(e) => setState(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -313,6 +427,8 @@ const JobPost = () => {
                       margin="normal"
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -323,6 +439,8 @@ const JobPost = () => {
                       margin="normal"
                       value={educationLevel}
                       onChange={(e) => setEducationLevel(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -335,6 +453,8 @@ const JobPost = () => {
                       rows={4}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
+                      required
+                      className="custom-focused-border"
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -344,15 +464,41 @@ const JobPost = () => {
                         row
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
+                        sx={{
+                          "& .MuiRadio-root": {
+                            color: "#018a82",
+                          },
+                          "& .Mui-checked": {
+                            color: "#018a82",
+                          },
+                        }}
                       >
                         <FormControlLabel
                           value="Active"
-                          control={<Radio />}
+                          control={
+                            <Radio
+                              sx={{
+                                color: "#018a82",
+                                "&.Mui-checked": {
+                                  color: "#018a82",
+                                },
+                              }}
+                            />
+                          }
                           label="Active"
                         />
                         <FormControlLabel
                           value="Inactive"
-                          control={<Radio />}
+                          control={
+                            <Radio
+                              sx={{
+                                color: "#018a82",
+                                "&.Mui-checked": {
+                                  color: "#018a82",
+                                },
+                              }}
+                            />
+                          }
                           label="Inactive"
                         />
                       </RadioGroup>

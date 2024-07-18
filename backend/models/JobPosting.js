@@ -11,7 +11,7 @@ const JobPostingSchema = new Schema({
     required: true,
   },
   position: String,
-  jobCategory: String,
+  jobIndustry: String,
   jobType: String,
   vacancy: Number,
   experience: String,

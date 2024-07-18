@@ -215,7 +215,7 @@ const JobDetails = () => {
                 {
                   icon: <Business />,
                   label: "Industry",
-                  value: job.jobCategory,
+                  value: job.jobIndustry,
                 },
                 {
                   icon: <Schedule />,

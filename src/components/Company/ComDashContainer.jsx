@@ -107,7 +107,7 @@ const ComDashContainer = () => {
         <Divider />
         <List component="nav">
           {companyListItems}
-          <Divider sx={{ my: 10 }} />
+          <Divider sx={{ my: 4 }} />
           {secondaryListItems}
         </List>
       </SHSDrawer>

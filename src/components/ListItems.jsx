@@ -78,12 +78,6 @@ export const candidateListItems = (
       </ListItemIcon>
       <ListItemText primary="Browse Jobs" />
     </ListItemButton>
-    <ListItemButton id="uploadedCVButton" component={Link} to="/file">
-      <ListItemIcon>
-        <UploadFile sx={{ color: "#018a82", fontSize: "2.5rem" }} />
-      </ListItemIcon>
-      <ListItemText primary="Uploaded CV" />
-    </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
         <BookmarkBorder sx={{ color: "#018a82", fontSize: "2.5rem" }} />
