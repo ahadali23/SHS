@@ -8,8 +8,6 @@ const TestSchema = new Schema({
   testDuration: { type: Number, required: true },
   testType: { type: String, required: true },
   numberOfQuestions: { type: Number, required: true },
-  customQuestion: { type: String },
-  answer: { type: String },
   submittedAt: { type: Date, default: Date.now },
   job_id: { type: String, required: true },
 });

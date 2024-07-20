@@ -49,11 +49,15 @@ export const companyListItems = (
       </ListItemIcon>
       <ListItemText primary="Technical Test" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton
+      id="interviewQuestionButton"
+      component={Link}
+      to="/interview-questions"
+    >
       <ListItemIcon>
         <PsychologyAlt sx={{ color: "#018a82", fontSize: "2.5rem" }} />
       </ListItemIcon>
-      <ListItemText primary="Logical Questions" />
+      <ListItemText primary="Interview Questions" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>

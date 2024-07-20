@@ -40,6 +40,7 @@ const TestSetup = () => {
     const detailUrl = `/add-questions/${job._id}`;
     navigate(detailUrl, { state: { job } });
   };
+
   return (
     <Container maxWidth="sm" style={{ marginTop: "2rem" }}>
       <Typography variant="h4" align="center" gutterBottom>

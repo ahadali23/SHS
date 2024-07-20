@@ -17,6 +17,7 @@ import {
   FormLabel,
   Autocomplete,
   Chip,
+  Slide,
 } from "@mui/material";
 import axios from "axios";
 import { skillOptions } from "../SkillsList";
@@ -54,7 +55,7 @@ const JobPost = ({ job }) => {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    if ((job && job.postedDate) || job.lastDateToApply) {
+    if ((job && job.postedDate && job.lastDateToApply)) {
       try {
         const postDate = new Date(job.postedDate);
         const last = new Date(job.lastDateToApply);
@@ -86,7 +87,7 @@ const JobPost = ({ job }) => {
     e.preventDefault();
     setMessage(null);
     try {
-      const response = await axios.post("http://localhost:3000/job/post", {
+      const payload = {
         companyName: userInfo.info.companyName,
         jobTitle,
         position,
@@ -107,12 +108,23 @@ const JobPost = ({ job }) => {
         educationLevel,
         description,
         status,
-      });
+      };
+
+      if (job && job._id) {
+        const response = await axios.put(
+          `http://localhost:3000/job/update/${job._id}`,
+          payload
+        );
+        navigate(-1)
+      } else {
+        const response = await axios.post("http://localhost:3000/job/post", payload);
+        navigate(-1)
+      }
+
       setMessage({
         type: "success",
-        text: "Job Added Successfully",
+        text: job ? "Job Updated Successfully" : "Job Added Successfully",
       });
-      console.log(response.data);
     } catch (error) {
       setMessage({
         type: "error",
@@ -156,7 +168,7 @@ const JobPost = ({ job }) => {
                 align="center"
                 gutterBottom
               >
-                Post a Job
+                {job ? "Edit Job" : "Post a Job"}
               </Typography>
               <form onSubmit={handleSubmit}>
                 {message && (
@@ -513,7 +525,15 @@ const JobPost = ({ job }) => {
                       variant="contained"
                       color="secondary"
                       sx={{ textTransform: "none" }}
-                      onClick={() => navigate(-1)}
+                      onClick={() => {
+                        // if(job){
+                        //   navigate("/postjob")
+                        // }
+                        // else{
+                        //   navigate(-1)
+                        // }
+                        navigate(-1)
+                      }}
                     >
                       Close
                     </Button>
@@ -530,7 +550,7 @@ const JobPost = ({ job }) => {
                         fontWeight: "bold",
                       }}
                     >
-                      Submit
+                      {job ? "Update Job" : "Submit Job"}
                     </Button>
                   </Grid>
                 </Grid>

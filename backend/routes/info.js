@@ -11,7 +11,6 @@ const fs = require("fs");
 
 const verifyToken = (req, res, next) => {
   const token = req.header("x-auth-token");
-  console.log(token)
   if (!token) {
     return res.status(401).json({ message: "No token, authorization denied" });
   }

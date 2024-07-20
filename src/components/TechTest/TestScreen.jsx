@@ -10,25 +10,7 @@ import {
   Button,
   LinearProgress,
 } from "@mui/material";
-
-const questions = [
-  {
-    question:
-      "Which of the following are JavaScript data types? (Select all that apply)",
-    options: ["String", "Number", "Function", "Array"],
-  },
-  {
-    question:
-      "Which of the following are JavaScript data types? (Select all that apply)",
-    options: ["String", "Number", "Function", "Array"],
-  },
-  {
-    question:
-      "Which of the following are JavaScript data types? (Select all that apply)",
-    options: ["String", "Number", "Function", "Array"],
-  },
-  // Add more questions as needed
-];
+import axios from "axios";
 
 const Timer = ({ initialTime, onTimeUp }) => {
   const [time, setTime] = useState(initialTime);
@@ -130,6 +112,26 @@ const Question = ({
 
 const TestScreen = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [questions, setQuestions] = useState([]);
+
+  const fetchQuestions = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/test/get");
+      console.log(response.data);
+      if (response.data.length > 0) {
+        setQuestions(response.data[0].questions);
+        console.log(questions);
+      } else {
+        setQuestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
 
   const handleSubmit = (selectedOptions, skip = false) => {
     console.log("Selected Options:", selectedOptions);
@@ -143,6 +145,10 @@ const TestScreen = () => {
       // Handle end of quiz
     }
   };
+
+  if (questions.length === 0) {
+    return <Typography>Loading questions...</Typography>;
+  }
 
   return (
     <Question

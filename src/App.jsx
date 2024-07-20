@@ -8,6 +8,7 @@ import CvFile from "./pages/CvFile";
 import JobPosting from "./pages/JobPosting";
 import BrowseJobs from "./pages/BrowseJobs";
 import Interview from "./pages/Interview";
+import InterviewSetup from "./pages/InterviewSetup";
 import JobInfo from "./pages/JobInfo";
 import CandidateRecords from "./pages/CandidateRecords";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -51,9 +52,10 @@ function App() {
         <Route path="/test" element={<TechTest />} />
         <Route path="/record-details/:job_id" element={<CanRecDetails />} />
         <Route path="/application/:applicant_id" element={<ApplicantInfo />} />
-        <Route path="/add-questions/:job_id" element={<QuestionSetup />} />
+        <Route path="/add-questions/:id" element={<QuestionSetup />} />
         <Route path="/jobs/:companyName/:jobTitle" element={<JobInfo />} />
         <Route path="/interview" element={<Interview />} />
+        <Route path="/interview-questions" element={<InterviewSetup />} />
         <Route path="/setting" element={<Settings />} />
       </Routes>
     </Router>

@@ -8,12 +8,11 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
-  Tab,
-  Tabs,
   Typography,
   Button,
   Divider,
 } from "@mui/material";
+import { AspectRatio, IconButton, Stack } from "@mui/joy";
 import { MuiFileInput } from "mui-file-input";
 import {
   Email,
@@ -25,6 +24,7 @@ import {
   WhatsApp,
   AttachFile,
   Close,
+  EditRounded,
 } from "@mui/icons-material";
 import axios from "axios";
 
@@ -55,6 +55,11 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
     setProfilePicPreview(URL.createObjectURL(file));
   };
 
+  const handleRemoveProfilePic = () => {
+    setProfilePic(null);
+    setProfilePicPreview(null); // Clear the preview
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -63,6 +68,8 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
     });
     if (profilePic) {
       formData.append("picture", profilePic);
+    } else if (userInfo.picture) {
+      formData.append("picture", null); // Ensure no picture is uploaded
     }
     try {
       const token = localStorage.getItem("SHS");
@@ -84,12 +91,58 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
   };
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 2, position: "relative" }}>
       <form onSubmit={handleSubmit}>
-        <Avatar
-          src={profilePicPreview}
-          sx={{ width: 100, height: 100, mb: 2, alignItems: "center" }}
-        />
+        <Stack
+          direction={"row"}
+          spacing={2}
+          justifyContent={"center"}
+          alignItems={"center"}
+          sx={{ position: "relative" }}
+        >
+          <Stack direction="column" spacing={1}>
+            <AspectRatio
+              ratio="1"
+              maxHeight={108}
+              sx={{
+                flex: 1,
+                minWidth: 108,
+                borderRadius: "100%",
+                borderColor: "black",
+              }}
+            >
+              <Avatar
+                src={profilePicPreview}
+                sx={{ width: 100, height: 100, mb: 2 }}
+              />
+            </AspectRatio>
+            <IconButton
+              aria-label="upload new picture"
+              size="small"
+              variant="outlined"
+              color="neutral"
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(80%, 60%)",
+                bgcolor: "background.body",
+                boxShadow: "sm",
+              }}
+              component="label"
+            >
+              {profilePicPreview ? (
+                <Close sx={{ color: "red" }} onClick={handleRemoveProfilePic} />
+              ) : (
+                <>
+                  <input type="file" hidden onChange={handleProfilePicChange} />
+                  <EditRounded />
+                </>
+              )}
+            </IconButton>
+          </Stack>
+        </Stack>
+        {/* Form Fields */}
         <TextField
           fullWidth
           label="First Name"
@@ -146,12 +199,6 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
           onChange={handleChange}
           margin="normal"
         />
-        <Box sx={{ mt: 2 }}>
-          <Button variant="contained" component="label">
-            Upload Profile Picture
-            <input type="file" hidden onChange={handleProfilePicChange} />
-          </Button>
-        </Box>
         <Button
           type="submit"
           variant="contained"

@@ -51,6 +51,17 @@ const JobPost = () => {
   const handleEdit = (job) => {
     setSelectedJob(job);
     setCreateNew(true);
+    // navigate(`/edit-job/${job._id}`);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/job/delete/${id}`);
+      setJobPosts(jobs.filter((job) => job._id !== id));
+      setMessage("Job deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    }
   };
 
   return (
@@ -91,10 +102,22 @@ const JobPost = () => {
                     mb: 2,
                   }}
                 >
-                  <Typography variant="h5">Job Posts</Typography>
+                  <Typography variant="h5" color={"#018a82"}>
+                    Job Posts
+                  </Typography>
                   <Button
                     variant="contained"
                     color="primary"
+                    sx={{
+                      backgroundColor: "#018a82",
+                      "&:hover": {
+                        backgroundColor: "#52c9c1",
+                      },
+                      textTransform: "none",
+                      fontSize: 18,
+                      fontWeight: "bold",
+                      borderRadius: 5,
+                    }}
                     onClick={() => {
                       setSelectedJob(null);
                       setCreateNew(true);
@@ -135,11 +158,17 @@ const JobPost = () => {
                             {row.applicantCount}
                           </TableCell>
                           <TableCell align="center">
-                            <IconButton aria-label="edit" onClick={() => handleEdit(row)}>
-                              <Edit />
+                            <IconButton
+                              aria-label="edit"
+                              onClick={() => handleEdit(row)}
+                            >
+                              <Edit sx={{ color: "orange" }} />
                             </IconButton>
-                            <IconButton aria-label="delete">
-                              <Delete />
+                            <IconButton
+                              aria-label="delete"
+                              onClick={() => handleDelete(row._id)}
+                            >
+                              <Delete sx={{ color: "red" }} />
                             </IconButton>
                           </TableCell>
                         </TableRow>

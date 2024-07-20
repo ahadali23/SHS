@@ -86,4 +86,26 @@ router.post("/post", async (req, res) => {
   }
 });
 
+router.put("/update/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const updatedJobPosting = await JobPosting.findByIdAndUpdate(id, req.body);
+    res.json(updatedJobPosting);
+  } catch (err) {
+    console.error("Error updating job posting:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await JobPosting.findByIdAndDelete(id);
+    res.json({ message: "Job posting deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting job posting:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;
