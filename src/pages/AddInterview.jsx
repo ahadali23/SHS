@@ -3,7 +3,7 @@ import { Box, Toolbar } from "@mui/material";
 import ComDashContainer from "../components/Company/ComDashContainer";
 import InterviewQuestions from "../components/Interview/InterviewQuestions";
 
-const Test = () => {
+const AddInterview = () => {
   return (
     <Box sx={{ display: "flex" }}>
       <ComDashContainer />
@@ -26,4 +26,4 @@ const Test = () => {
   );
 };
 
-export default Test;
+export default AddInterview;

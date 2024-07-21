@@ -52,7 +52,7 @@ export const companyListItems = (
     <ListItemButton
       id="interviewQuestionButton"
       component={Link}
-      to="/interview-questions"
+      to="/interview-schedule"
     >
       <ListItemIcon>
         <PsychologyAlt sx={{ color: "#018a82", fontSize: "2.5rem" }} />

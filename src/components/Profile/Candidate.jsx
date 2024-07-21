@@ -11,9 +11,10 @@ import {
   Typography,
   Button,
   Divider,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { AspectRatio, IconButton, Stack } from "@mui/joy";
-import { MuiFileInput } from "mui-file-input";
 import {
   Email,
   Phone,
@@ -22,8 +23,6 @@ import {
   Twitter,
   LinkedIn,
   WhatsApp,
-  AttachFile,
-  Close,
   EditRounded,
 } from "@mui/icons-material";
 import axios from "axios";
@@ -101,44 +100,24 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
           sx={{ position: "relative" }}
         >
           <Stack direction="column" spacing={1}>
-            <AspectRatio
-              ratio="1"
-              maxHeight={108}
-              sx={{
-                flex: 1,
-                minWidth: 108,
-                borderRadius: "100%",
-                borderColor: "black",
-              }}
-            >
-              <Avatar
-                src={profilePicPreview}
-                sx={{ width: 100, height: 100, mb: 2 }}
-              />
-            </AspectRatio>
+            <Avatar
+              src={profilePicPreview}
+              sx={{ width: 100, height: 100, mb: 2 }}
+            />
             <IconButton
               aria-label="upload new picture"
               size="small"
-              variant="outlined"
-              color="neutral"
+              color="primary"
               sx={{
                 position: "absolute",
                 top: "50%",
                 left: "50%",
                 transform: "translate(80%, 60%)",
-                bgcolor: "background.body",
-                boxShadow: "sm",
               }}
               component="label"
             >
-              {profilePicPreview ? (
-                <Close sx={{ color: "red" }} onClick={handleRemoveProfilePic} />
-              ) : (
-                <>
-                  <input type="file" hidden onChange={handleProfilePicChange} />
-                  <EditRounded />
-                </>
-              )}
+              <input type="file" hidden onChange={handleProfilePicChange} />
+              <EditRounded />
             </IconButton>
           </Stack>
         </Stack>
@@ -212,48 +191,171 @@ const ProfileSettingsForm = ({ userInfo, onSave }) => {
   );
 };
 
-const ProfileSetting = () => {
-  const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [file, setFile] = useState(null);
+const SocialForm = ({ userInfo, onSave }) => {
+  const [formValues, setFormValues] = useState({
+    facebook: userInfo.facebook || "",
+    twitter: userInfo.twitter || "",
+    linkedIn: userInfo.linkedIn || "",
+    whatsapp: userInfo.whatsapp || "",
+  });
 
-  const fetchUserInfo = async () => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
       const token = localStorage.getItem("SHS");
       if (!token) {
         throw new Error("No token found");
       }
-      const response = await axios.get("http://localhost:3000/user/userinfo", {
+      await axios.put("http://localhost:3000/user/updatesocials", formValues, {
         headers: {
           "x-auth-token": token,
         },
       });
-      const fetchedUserInfo = response.data.userInfo;
-      setUserInfo({
-        ...fetchedUserInfo,
-        picture: fetchedUserInfo.picture,
-      });
-      setLoading(false);
+      alert("Social links updated successfully");
+      onSave();
     } catch (error) {
-      console.error("Error fetching user info", error);
+      console.error("Error updating social links", error);
+      alert("Error updating social links");
     }
   };
 
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
+  return (
+    <Box component="form" onSubmit={handleSubmit} sx={{ p: 2 }}>
+      <TextField
+        fullWidth
+        label="Facebook"
+        name="facebook"
+        value={formValues.facebook}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <TextField
+        fullWidth
+        label="Twitter"
+        name="twitter"
+        value={formValues.twitter}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <TextField
+        fullWidth
+        label="LinkedIn"
+        name="linkedIn"
+        value={formValues.linkedIn}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <TextField
+        fullWidth
+        label="WhatsApp"
+        name="whatsapp"
+        value={formValues.whatsapp}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+        Save Changes
+      </Button>
+    </Box>
+  );
+};
 
-  const handleProfileUpdate = () => {
-    fetchUserInfo();
+const ChangePasswordForm = ({ onSave }) => {
+  const [formValues, setFormValues] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
   };
 
-  const handleFileChange = async (newFile) => {
-    setFile(newFile);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formValues.newPassword !== formValues.confirmPassword) {
+      alert("New password and confirm password do not match");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("SHS");
+      if (!token) {
+        throw new Error("No token found");
+      }
+      await axios.put(
+        "http://localhost:3000/user/changepassword",
+        {
+          currentPassword: formValues.currentPassword,
+          newPassword: formValues.newPassword,
+        },
+        {
+          headers: {
+            "x-auth-token": token,
+          },
+        }
+      );
+      alert("Password changed successfully");
+      onSave();
+    } catch (error) {
+      console.error("Error changing password", error);
+      alert("Error changing password");
+    }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  return (
+    <Box component="form" onSubmit={handleSubmit} sx={{ p: 2 }}>
+      <TextField
+        fullWidth
+        label="Current Password"
+        name="currentPassword"
+        type="password"
+        value={formValues.currentPassword}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <TextField
+        fullWidth
+        label="New Password"
+        name="newPassword"
+        type="password"
+        value={formValues.newPassword}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <TextField
+        fullWidth
+        label="Confirm Password"
+        name="confirmPassword"
+        type="password"
+        value={formValues.confirmPassword}
+        onChange={handleChange}
+        margin="normal"
+      />
+      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+        Change Password
+      </Button>
+    </Box>
+  );
+};
+
+const Candidate = ({ userInfo, handleProfileUpdate }) => {
+  const [tabIndex, setTabIndex] = useState(0);
+
+  const handleTabChange = (event, newValue) => {
+    setTabIndex(newValue);
+  };
 
   return (
     <Box sx={{ display: "flex", p: 3, bgcolor: "#f5f5f5", minHeight: "100vh" }}>
@@ -307,34 +409,47 @@ const ProfileSetting = () => {
         </Box>
         <Divider />
         <Box sx={{ mt: 3 }}>
-          <Typography variant="h6">Attachments</Typography>
-          <MuiFileInput
-            value={file}
-            onChange={handleFileChange}
-            placeholder="Select CV/Resume"
-            InputProps={{
-              inputProps: {
-                accept: ".pdf",
-              },
-              startAdornment: <AttachFile />,
-            }}
-            clearIconButtonProps={{
-              title: "Remove",
-              children: <Close fontSize="small" />,
-            }}
-            sx={{ mt: 1 }}
+          <Typography variant="h6">Bio</Typography>
+          <TextField
+            fullWidth
+            label="Write About You"
+            variant="outlined"
+            margin="normal"
+            multiline
+            rows={4}
+            // value={description}
+            // onChange={(e) => setDescription(e.target.value)}
+            className="custom-focused-border"
           />
         </Box>
-        <Divider />
         <Box sx={{ mt: 3 }}>
           <Typography variant="h6">Skills</Typography>
         </Box>
       </Paper>
       <Paper sx={{ flex: 1, p: 3 }}>
-        <ProfileSettingsForm userInfo={userInfo} onSave={handleProfileUpdate} />
+        <Tabs
+          value={tabIndex}
+          onChange={handleTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label="Overview" />
+          <Tab label="Connect Socials" />
+          <Tab label="Change Password" />
+        </Tabs>
+        {tabIndex === 0 && (
+          <ProfileSettingsForm
+            userInfo={userInfo}
+            onSave={handleProfileUpdate}
+          />
+        )}
+        {tabIndex === 1 && (
+          <SocialForm userInfo={userInfo} onSave={handleProfileUpdate} />
+        )}
+        {tabIndex === 2 && <ChangePasswordForm onSave={handleProfileUpdate} />}
       </Paper>
     </Box>
   );
 };
 
-export default ProfileSetting;
+export default Candidate;

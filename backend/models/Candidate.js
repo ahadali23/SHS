@@ -22,7 +22,7 @@ const CandidateSchema = new Schema({
   },
   address: {
     type: String,
-    // required: true,
+    required: true,
   },
   city: {
     type: String,
@@ -32,7 +32,25 @@ const CandidateSchema = new Schema({
     type: String,
     required: true,
   },
+  profession: {
+    type: String,
+  },
   picture: {
+    type: String,
+  },
+  bio: {
+    type: String,
+  },
+  facebook: {
+    type: String,
+  },
+  twitter: {
+    type: String,
+  },
+  linkedIn: {
+    type: String,
+  },
+  whatsapp: {
     type: String,
   },
   userId: {

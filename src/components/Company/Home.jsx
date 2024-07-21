@@ -18,7 +18,13 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Email, LinkedIn, GitHub, Twitter } from "@mui/icons-material";
+import {
+  Email,
+  LinkedIn,
+  GitHub,
+  Twitter,
+  WhatsApp,
+} from "@mui/icons-material";
 import { useUserInfo } from "../../hooks/useUserInfo";
 
 const data = [
@@ -191,26 +197,13 @@ const Profile = ({ userInfo }) => (
     />
     <Typography variant="h6">{userInfo.info.companyName}</Typography>
     <Typography variant="body2" color="textSecondary">
-      Programmer
+      {userInfo.info.hrName}
     </Typography>
     <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
       {userInfo.info.email}
     </Typography>
-    <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
-      <Button variant="outlined" color="primary" size="small">
-        PHP
-      </Button>
-      <Button variant="outlined" color="primary" size="small">
-        Vue
-      </Button>
-      <Button variant="outlined" color="primary" size="small">
-        Laravel
-      </Button>
-    </Box>
     <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-      Experienced programmer with a background in web development and software
-      engineering. Passionate about building efficient and scalable
-      applications.
+      {userInfo.info.bio}
     </Typography>
     <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
       <IconButton
@@ -222,24 +215,17 @@ const Profile = ({ userInfo }) => (
       </IconButton>
       <IconButton
         aria-label="LinkedIn"
-        color="primary"
-        href="https://www.linkedin.com/in/oda-dink"
+        sx={{ color: "#0077b5", mx: 0.5 }}
+        href={userInfo.linkedIn}
       >
         <LinkedIn />
       </IconButton>
       <IconButton
         aria-label="GitHub"
         color="primary"
-        href="https://github.com/oda-dink"
+        href={userInfo.github || ""}
       >
         <GitHub />
-      </IconButton>
-      <IconButton
-        aria-label="Twitter"
-        color="primary"
-        href="https://twitter.com/oda_dink"
-      >
-        <Twitter />
       </IconButton>
     </Box>
   </Paper>

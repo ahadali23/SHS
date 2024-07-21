@@ -5,7 +5,6 @@ const JobPosting = require("../models/JobPosting");
 const router = express.Router();
 const OpenAI = require("openai");
 
-// const OPENAI_API_KEY = "";
 const openai = new OpenAI({ apiKey: `process.env.OPENAI_API_KEY` });
 const aiModel = "gpt-3.5-turbo";
 

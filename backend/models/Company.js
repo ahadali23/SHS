@@ -15,6 +15,11 @@ const CompanySchema = new Schema({
     unique: true,
     required: true,
   },
+  phoneNumber: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   address: {
     type: String,
     required: true,
@@ -28,6 +33,18 @@ const CompanySchema = new Schema({
     required: true,
   },
   picture: {
+    type: String,
+  },
+  bio: {
+    type: String,
+  },
+  github: {
+    type: String,
+  },
+  linkedIn: {
+    type: String,
+  },
+  whatsapp: {
     type: String,
   },
   userId: {

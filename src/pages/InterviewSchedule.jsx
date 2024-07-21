@@ -1,15 +1,12 @@
 import React from "react";
-import ProfileSetting from "../components/Profile/ProfileSetting";
 import { Box, Toolbar } from "@mui/material";
 import ComDashContainer from "../components/Company/ComDashContainer";
-import CDashContainer from "../components/Candidate/CDashContainer";
-import { useUserInfo } from "../hooks/useUserInfo";
+import InterviewSetup from "../components/Interview/InterviewSetup";
 
-const Setting = () => {
-  const { userInfo } = useUserInfo();
+const InterviewSchedule = () => {
   return (
     <Box sx={{ display: "flex" }}>
-      {userInfo.role === "company" ? <ComDashContainer /> : <CDashContainer />}
+      <ComDashContainer />
       <Box
         component="main"
         sx={{
@@ -23,10 +20,10 @@ const Setting = () => {
       >
         <Toolbar />
         {/* here */}
-        <ProfileSetting />
+        <InterviewSetup />
       </Box>
     </Box>
   );
 };
 
-export default Setting;
+export default InterviewSchedule;

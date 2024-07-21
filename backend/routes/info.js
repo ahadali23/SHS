@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
@@ -113,6 +113,95 @@ router.put(
     }
   }
 );
+
+router.put("/updatesocials", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const role = user.role;
+    if (role !== "candidate" && role !== "company") {
+      return res.status(400).json({ message: "Invalid user role" });
+    }
+
+    const { github, linkedIn, whatsapp } = req.body;
+
+    let updatedInfo = {
+      github,
+      linkedIn,
+      whatsapp,
+    };
+
+    if (role === "candidate") {
+      await Candidate.findOneAndUpdate({ userId: user._id }, updatedInfo);
+    } else if (role === "company") {
+      await Company.findOneAndUpdate({ userId: user._id }, updatedInfo);
+    }
+
+    res.status(200).json({ message: "Social links updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+router.put("/updatebio", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const role = user.role;
+    if (role !== "candidate" && role !== "company") {
+      return res.status(400).json({ message: "Invalid user role" });
+    }
+
+    const { bio } = req.body;
+
+    let updatedInfo = {
+      bio: bio,
+    };
+
+    if (role === "candidate") {
+      await Candidate.findOneAndUpdate({ userId: user._id }, updatedInfo);
+    } else if (role === "company") {
+      await Company.findOneAndUpdate({ userId: user._id }, updatedInfo);
+    }
+
+    res.status(200).json({ message: "Social links updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.put("/changepassword", verifyToken, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  try {
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if current password is correct
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    // Hash the new password and update it
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 router.get("/files/:userId/:fileName", verifyToken, (req, res) => {
   const userId = req.params.userId;

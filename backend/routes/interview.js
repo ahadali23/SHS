@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const ApplyJob = require("../models/ApplyJob");
+const InterviewSchedule = require("../models/Interview");
 const upload = require("../storage"); // Import multer config
 const { spawn } = require("child_process");
 
@@ -25,6 +26,65 @@ const verifyToken = (req, res, next) => {
     res.status(401).json({ message: "Invalid token" });
   }
 };
+
+router.get("/interview-schedules", async (req, res) => {
+  try {
+    const schedules = await InterviewSchedule.find();
+    res.json(schedules);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching interview schedules", error });
+  }
+});
+
+// Route to add a new interview schedule
+router.post("/interview-schedules", async (req, res) => {
+  const {
+    interviewDate,
+    interviewWindowStart,
+    interviewWindowEnd,
+    interviewDuration,
+    job_id,
+  } = req.body;
+
+  const newSchedule = new InterviewSchedule({
+    interviewDate,
+    interviewWindowStart,
+    interviewWindowEnd,
+    interviewDuration,
+    questions: [],
+    job_id,
+  });
+
+  try {
+    const savedSchedule = await newSchedule.save();
+    res.status(201).json(savedSchedule);
+  } catch (error) {
+    res.status(400).json({ message: "Error saving interview schedule", error });
+  }
+});
+
+// Route to add a question to an interview schedule
+router.post("/interview-schedules/:id/questions", async (req, res) => {
+  const { id } = req.params;
+  const { question } = req.body;
+
+  try {
+    const schedule = await InterviewSchedule.findOne({ job_id: id });
+
+    if (!schedule) {
+      return res.status(404).json({ message: "Interview schedule not found" });
+    }
+
+    schedule.questions.push(question);
+    await schedule.save();
+
+    res.json(schedule);
+  } catch (error) {
+    res.status(400).json({ message: "Error adding question", error });
+  }
+});
 
 router.post(
   "/upload-video",
@@ -82,7 +142,7 @@ router.post(
       const jobApplication = await ApplyJob.findOne({
         userID: userId,
       });
-      console.log(jobApplication)
+      console.log(jobApplication);
 
       if (!jobApplication) {
         return res.status(404).json({ message: "Job application not found" });
@@ -97,6 +157,64 @@ router.post(
     } catch (error) {
       console.error("Error processing video upload:", error);
       res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
+router.put(
+  "/interview-schedules/:scheduleId/questions/:questionId",
+  async (req, res) => {
+    const { scheduleId, questionId } = req.params;
+    const { question } = req.body;
+
+    try {
+      const schedule = await InterviewSchedule.findById(scheduleId);
+
+      if (!schedule) {
+        return res
+          .status(404)
+          .json({ message: "Interview schedule not found" });
+      }
+
+      const questionIndex = schedule.questions.findIndex(
+        (q) => q._id.toString() === questionId
+      );
+      if (questionIndex === -1) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      schedule.questions[questionIndex].text = question;
+      await schedule.save();
+
+      res.json(schedule);
+    } catch (error) {
+      res.status(400).json({ message: "Error updating question", error });
+    }
+  }
+);
+
+router.delete(
+  "/interview-schedules/:scheduleId/questions/:questionId",
+  async (req, res) => {
+    const { scheduleId, questionId } = req.params;
+
+    try {
+      const schedule = await InterviewSchedule.findById(scheduleId);
+
+      if (!schedule) {
+        return res
+          .status(404)
+          .json({ message: "Interview schedule not found" });
+      }
+
+      schedule.questions = schedule.questions.filter(
+        (q) => q._id.toString() !== questionId
+      );
+      await schedule.save();
+
+      res.json(schedule);
+    } catch (error) {
+      res.status(400).json({ message: "Error deleting question", error });
     }
   }
 );

@@ -8,7 +8,7 @@ import CvFile from "./pages/CvFile";
 import JobPosting from "./pages/JobPosting";
 import BrowseJobs from "./pages/BrowseJobs";
 import Interview from "./pages/Interview";
-import InterviewSetup from "./pages/InterviewSetup";
+import InterviewSchedule from "./pages/InterviewSchedule";
 import JobInfo from "./pages/JobInfo";
 import CandidateRecords from "./pages/CandidateRecords";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -16,6 +16,7 @@ import ResetPassword from "./pages/ResetPassword";
 import CanRecDetails from "./pages/CanRecDetails";
 import ApplicantInfo from "./pages/ApplicantInfo";
 import QuestionSetup from "./pages/QuestionSetup";
+import AddInterview from "./pages/AddInterview";
 import Test from "./pages/Test";
 import TechTest from "./pages/TechTest";
 import Settings from "./pages/Settings";
@@ -53,9 +54,10 @@ function App() {
         <Route path="/record-details/:job_id" element={<CanRecDetails />} />
         <Route path="/application/:applicant_id" element={<ApplicantInfo />} />
         <Route path="/add-questions/:id" element={<QuestionSetup />} />
+        <Route path="/add-interview/:id" element={<AddInterview />} />
         <Route path="/jobs/:companyName/:jobTitle" element={<JobInfo />} />
         <Route path="/interview" element={<Interview />} />
-        <Route path="/interview-questions" element={<InterviewSetup />} />
+        <Route path="/interview-schedule" element={<InterviewSchedule />} />
         <Route path="/setting" element={<Settings />} />
       </Routes>
     </Router>
